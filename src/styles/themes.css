@@ -1,0 +1,266 @@
+/* Variáveis globais para ambos os temas */
+:root {
+  /* Cores de destaque compartilhadas */
+  --accent-color: #10B981;
+  --accent-hover: #059669;
+  --error-color: #EF4444;
+  --success-color: #10B981;
+  --success-dark: #047857;
+  --warning-color: #F59E0B;
+  --info-color: #3B82F6;
+
+  /* Estados (compartilhados entre temas) */
+  --status-success-bg: rgba(16, 185, 129, 0.1);
+  --status-success-color: var(--success-color);
+  --status-warning-bg: rgba(245, 158, 11, 0.1);
+  --status-warning-color: var(--warning-color);
+  --status-error-bg: rgba(239, 68, 68, 0.1);
+  --status-error-color: var(--error-color);
+
+  /* Tema escuro - cores base */
+  --dark-colors-bg-primary: #111827;
+  --dark-colors-bg-secondary: #1F2937;
+  --dark-colors-text-primary: #F9FAFB;
+  --dark-colors-text-secondary: #9CA3AF;
+  --dark-colors-text-tertiary: #D1D5DB;
+  --dark-colors-border: #374151;
+  --dark-colors-card-bg: rgba(17, 24, 39, 0.3);
+  --dark-colors-card-border: #1F2937;
+  
+  /* Tema claro - cores base */
+  --light-colors-bg-primary: #FFFFFF;
+  --light-colors-bg-secondary: #F1F5F9;
+  --light-colors-text-primary: #111827;
+  --light-colors-text-secondary: #4B5563;
+  --light-colors-text-tertiary: #6B7280;
+  --light-colors-border: #E5E7EB;
+  --light-colors-card-bg: #F8FAFC;
+  --light-colors-card-border: #E2E8F0;
+  --light-colors-sidebar-bg: #E2E8F0;
+  --light-colors-sidebar-active: var(--light-colors-bg-secondary);
+}
+
+/* Tema escuro */
+:root[data-theme="dark"] {
+  /* Cores principais */
+  --bg-primary: var(--dark-colors-bg-primary);
+  --bg-secondary: var(--dark-colors-bg-secondary);
+  --text-primary: var(--dark-colors-text-primary);
+  --text-secondary: var(--dark-colors-text-secondary);
+  --text-tertiary: var(--dark-colors-text-tertiary);
+  --border-color: var(--dark-colors-border);
+  --card-bg: var(--dark-colors-card-bg);
+  --card-border: var(--dark-colors-card-border);
+
+  /* Componentes específicos */
+  --card-bg: var(--dark-colors-bg-primary);
+  --card-border: transparent;
+  --input-bg: var(--dark-colors-border);
+  --input-border: var(--dark-colors-border);
+  --input-text: var(--dark-colors-text-primary);
+  --input-placeholder: var(--dark-colors-text-secondary);
+
+  /* Botões */
+  --button-primary-bg: var(--accent-color);
+  --button-primary-hover: var(--accent-hover);
+  --button-primary-text: var(--dark-colors-text-primary);
+  --button-secondary-bg: var(--dark-colors-border);
+  --button-secondary-hover: #4B5563;
+  --button-secondary-text: var(--dark-colors-text-primary);
+
+  /* Modal */
+  --modal-bg: var(--dark-colors-bg-secondary);
+  --modal-border: var(--dark-colors-border);
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Menu lateral */
+  --sidebar-bg: var(--dark-colors-bg-primary);
+  --sidebar-border: var(--dark-colors-border);
+  --sidebar-text: var(--dark-colors-text-primary);
+  --sidebar-text-secondary: var(--dark-colors-text-secondary);
+  --sidebar-text-hover: var(--accent-color);
+  --sidebar-active-bg: var(--bg-secondary);
+  --sidebar-active-text: var(--dark-colors-text-primary);
+  --sidebar-item-active-bg: var(--dark-colors-bg-secondary);
+  --sidebar-item-hover-bg: var(--dark-colors-bg-secondary);
+
+  /* Cabeçalho e tabelas */
+  --header-bg: var(--bg-primary);
+  --header-text: var(--dark-colors-text-primary);
+  --table-header-bg: #0A1120;
+  --table-header-text: var(--dark-colors-text-primary);
+  --table-row-hover: var(--dark-colors-border);
+  --table-border: var(--dark-colors-border);
+
+  /* Scrollbar */
+  --scrollbar-track: var(--dark-colors-bg-secondary);
+  --scrollbar-thumb: var(--dark-colors-border);
+  --scrollbar-thumb-hover: #4B5563;
+
+  /* Menu e Hover */
+  --menu-hover-bg: rgba(255,255,255,0.1);
+  --table-border-color: rgba(148,163,184,0.1);
+  --table-shadow: rgba(0, 0, 0, 0.05);
+
+  /* Sombras e efeitos */
+  --icon-bg: rgba(255, 255, 255, 0.1);
+  --icon-shadow: rgba(0, 0, 0, 0.2);
+  --switch-shadow: rgba(0, 0, 0, 0.2);
+  --switch-thumb-shadow: rgba(0, 0, 0, 0.1);
+  --switch-bg: #E2E8F0;
+
+  /* Status dos ícones */
+  --status-connected: var(--success-color);
+  --status-disconnected: var(--dark-colors-text-primary);
+}
+
+/* Tema claro */
+:root[data-theme="light"] {
+  /* Cores principais */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8FAFC;
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-tertiary: #64748B;
+  --border-color: #E2E8F0;
+  --card-bg: #FFFFFF;
+  --card-border: #E2E8F0;
+
+  /* Componentes específicos */
+  --card-bg: var(--light-colors-bg-primary);
+  --card-border: var(--light-colors-card-border);
+  --input-bg: #FFFFFF;
+  --input-border: #E2E8F0;
+  --input-text: #1E293B;
+  --input-placeholder: #94A3B8;
+
+  /* Botões */
+  --button-primary-bg: var(--accent-color);
+  --button-primary-hover: var(--accent-hover);
+  --button-primary-text: #FFFFFF;
+  --button-secondary-bg: var(--light-colors-bg-secondary);
+  --button-secondary-hover: var(--light-colors-border);
+  --button-secondary-text: var(--light-colors-text-primary);
+
+  /* Modal */
+  --modal-bg: var(--light-colors-bg-primary);
+  --modal-border: var(--light-colors-border);
+  --modal-overlay: rgba(0, 0, 0, 0.25);
+
+  /* Menu lateral */
+  --sidebar-bg: #F1F5F9;
+  --sidebar-border: #E2E8F0;
+  --sidebar-text: #334155;
+  --sidebar-text-secondary: #475569;
+  --sidebar-text-hover: var(--accent-color);
+  --sidebar-active-bg: #FFFFFF;
+  --sidebar-active-text: var(--accent-color);
+  --sidebar-item-active-bg: #FFFFFF;
+  --sidebar-item-hover-bg: rgba(0, 0, 0, 0.05);
+
+  /* Cabeçalho e tabelas */
+  --header-bg: var(--light-colors-bg-primary);
+  --header-text: var(--light-colors-text-primary);
+  --table-header-bg: #CBD5E1;
+  --table-header-text: var(--light-colors-text-primary);
+  --table-row-hover: var(--light-colors-bg-secondary);
+  --table-border: var(--light-colors-border);
+
+  /* Scrollbar */
+  --scrollbar-track: var(--light-colors-bg-secondary);
+  --scrollbar-thumb: var(--light-colors-text-tertiary);
+  --scrollbar-thumb-hover: var(--light-colors-text-secondary);
+
+  /* Menu e Hover */
+  --menu-hover-bg: var(--light-colors-bg-secondary);
+  --table-border-color: var(--light-colors-border);
+  --table-shadow: rgba(0, 0, 0, 0.05);
+
+  /* Sombras e efeitos */
+  --icon-bg: var(--light-colors-bg-secondary);
+  --icon-shadow: rgba(0, 0, 0, 0.1);
+  --switch-shadow: rgba(0, 0, 0, 0.1);
+  --switch-thumb-shadow: rgba(0, 0, 0, 0.05);
+  --switch-bg: var(--light-colors-bg-secondary);
+
+  /* Status dos ícones */
+  --status-connected: var(--success-color);
+  --status-disconnected: var(--light-colors-text-primary);
+}
+
+/* Scrollbar personalizada */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--accent-color);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--accent-hover);
+}
+
+/* Estilização da scrollbar global */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+}
+
+/* Toggle customizado */
+.custom-toggle {
+  position: relative;
+  width: 2.75rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+}
+
+.custom-toggle[data-disabled="true"] {
+  background-color: var(--light-colors-bg-secondary) !important;
+  cursor: not-allowed;
+}
+
+.custom-toggle[data-active="true"] {
+  background-color: var(--success-color);
+}
+
+.custom-toggle[data-active="false"] {
+  background-color: var(--switch-bg);
+}
+
+.custom-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background-color: white;
+  box-shadow: var(--switch-thumb-shadow);
+  transition: transform 0.2s;
+}
+
+.custom-toggle[data-active="true"]::after {
+  transform: translateX(1.25rem);
+}
