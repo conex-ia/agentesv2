@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import useAuth from '../stores/useAuth';
@@ -6,15 +6,9 @@ import useAuth from '../stores/useAuth';
 export interface Conversa {
   uid: string;
   created_at: string;
-  instancia: string | null;
-  origem: string | null;
-  mensagem: string | null;
-  remote_jid: string | null;
-  empresa: string | null;
+  origem: 'Assistente' | 'Humano' | null;
   dispositivo: string | null;
   messageTimestamp: Date | null;
-  messageType: string | null;
-  fonte_tipo: string | null;
 }
 
 export interface ContagemPorOrigem {
@@ -22,13 +16,6 @@ export interface ContagemPorOrigem {
   humano: number;
 }
 
-interface TotalPorDispositivo {
-  dispositivo: string;
-  origem: string;
-  total: number;
-}
-
-// Mapa de normalização dos dispositivos
 const DISPOSITIVO_NORMALIZADO = {
   'android': 'Android',
   'whatsapp android': 'Android',
@@ -42,6 +29,8 @@ const DISPOSITIVO_NORMALIZADO = {
   'web': 'WhatsApp Web'
 } as const;
 
+type DispositivoNormalizado = typeof DISPOSITIVO_NORMALIZADO[keyof typeof DISPOSITIVO_NORMALIZADO];
+
 export const useConversas = () => {
   const { empresaUid } = useAuth();
   const [conversas, setConversas] = useState<Conversa[]>([]);
@@ -49,92 +38,67 @@ export const useConversas = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const normalizarDispositivo = (dispositivo: string | null): DispositivoNormalizado => {
+    if (!dispositivo) return 'Desconhecido';
+    const key = dispositivo.toLowerCase().trim() as keyof typeof DISPOSITIVO_NORMALIZADO;
+    return DISPOSITIVO_NORMALIZADO[key] || 'Desconhecido';
+  };
+
+  const fetchConversas = useCallback(async () => {
     if (!empresaUid) {
       setLoading(false);
       return;
     }
 
-    const fetchConversas = async () => {
-      try {
-        console.log('[useConversas] Fetching conversas data...');
-        
-        // Primeiro, vamos contar o total de registros
-        const { count } = await supabase
-          .from('conex_conversas')
-          .select('*', { count: 'exact', head: true })
-          .eq('empresa', empresaUid);
+    try {
+      // Buscar apenas os últimos 30 dias de conversas
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-        console.log('[useConversas] Total de registros encontrados:', count);
+      const { data: conversasData, error: conversasError } = await supabase
+        .from('conex_conversas')
+        .select('uid, created_at, dispositivo, origem')
+        .eq('empresa', empresaUid)
+        .gte('created_at', thirtyDaysAgo.toISOString())
+        .order('created_at', { ascending: false });
 
-        // Agora vamos buscar todos os registros usando range
-        const { data: conversasData, error: conversasError } = await supabase
-          .from('conex_conversas')
-          .select('uid, created_at, dispositivo, origem')
-          .eq('empresa', empresaUid)
-          .range(0, count ? count - 1 : 1000);
+      if (conversasError) throw conversasError;
 
-        if (conversasError) throw conversasError;
+      const contagemTemp = { assistente: 0, humano: 0 };
+      
+      const conversasNormalizadas = conversasData?.map(conversa => {
+        // Contagem por origem
+        if (conversa.origem === 'Assistente') {
+          contagemTemp.assistente++;
+        } else if (conversa.origem === 'Humano') {
+          contagemTemp.humano++;
+        }
 
-        // Calcular contagens
-        const contagemTemp = {
-          assistente: 0,
-          humano: 0
+        return {
+          ...conversa,
+          dispositivo: normalizarDispositivo(conversa.dispositivo),
+          messageTimestamp: conversa.created_at ? new Date(conversa.created_at) : null
         };
+      }) || [];
 
-        // Converter e contar em uma única passagem
-        const conversasCompletas = (conversasData || []).map(conversa => {
-          // Contar origem
-          if (conversa.origem === 'Assistente') {
-            contagemTemp.assistente++;
-          } else if (conversa.origem === 'Humano') {
-            contagemTemp.humano++;
-          }
+      setConversas(conversasNormalizadas);
+      setContagem(contagemTemp);
+      setError(null);
+    } catch (err) {
+      console.error('[useConversas] Error:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao carregar conversas');
+    } finally {
+      setLoading(false);
+    }
+  }, [empresaUid]);
 
-          // Normalizar dispositivo
-          const dispositivo = (conversa.dispositivo || 'unknown').toLowerCase().trim();
-          const dispositivoNormalizado = DISPOSITIVO_NORMALIZADO[dispositivo as keyof typeof DISPOSITIVO_NORMALIZADO] || 'Desconhecido';
-
-          // Retornar objeto completo
-          return {
-            ...conversa,
-            dispositivo: dispositivoNormalizado,
-            instancia: null,
-            mensagem: null,
-            remote_jid: null,
-            empresa: empresaUid,
-            messageTimestamp: null,
-            messageType: null,
-            fonte_tipo: null
-          };
-        });
-
-        console.log('[useConversas] Total de registros retornados:', conversasData?.length);
-        console.log('[useConversas] Contagem por origem:', contagemTemp);
-
-        setConversas(conversasCompletas);
-        setContagem(contagemTemp);
-      } catch (err) {
-        console.error('[useConversas] Error:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-
+  useEffect(() => {
     fetchConversas();
 
-    // Configurar subscription do realtime
     const channelName = `conversas-changes-${empresaUid}-${Date.now()}`;
-    console.log('[useConversas] Setting up realtime channel:', channelName);
-
+    
     const subscription = supabase
-      .channel(channelName, {
-        config: {
-          broadcast: { self: true },
-          presence: { key: channelName }
-        }
-      })
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -143,23 +107,16 @@ export const useConversas = () => {
           table: 'conex_conversas',
           filter: `empresa=eq.${empresaUid}`
         },
-        async (payload: RealtimePostgresChangesPayload<Conversa>) => {
-          console.log('[useConversas] Realtime event received:', payload);
-          await fetchConversas();
+        (payload: RealtimePostgresChangesPayload<Conversa>) => {
+          fetchConversas();
         }
       )
-      .subscribe((status) => {
-        console.log('[useConversas] Realtime subscription status:', status);
-        if (status === 'SUBSCRIBED') {
-          console.log('[useConversas] Successfully subscribed to conversas changes');
-        }
-      });
+      .subscribe();
 
     return () => {
-      console.log('[useConversas] Cleaning up subscription for channel:', channelName);
       subscription.unsubscribe();
     };
-  }, [empresaUid]);
+  }, [empresaUid, fetchConversas]);
 
   return { conversas, contagem, loading, error };
 }; 

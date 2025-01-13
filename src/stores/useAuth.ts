@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface UserData {
   user_nome?: string;
@@ -22,10 +22,18 @@ const useAuth = create<AuthState>()(
       empresaUid: null,
       userData: null,
       setAuth: (userUid, empresaUid, userData) => set({ userUid, empresaUid, userData }),
-      clearAuth: () => set({ userUid: null, empresaUid: null, userData: null }),
+      clearAuth: () => {
+        // Limpa o localStorage manualmente
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('auth-storage');
+        }
+        // Limpa o estado do Zustand
+        set({ userUid: null, empresaUid: null, userData: null });
+      },
     }),
     {
       name: 'auth-storage',
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

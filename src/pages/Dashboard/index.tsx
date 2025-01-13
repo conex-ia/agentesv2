@@ -1,16 +1,60 @@
 import React from 'react';
-import WelcomeBar from './components/WelcomeBar';
-import DashboardCharts from './components/DashboardCharts';
-import { useUser } from '../../hooks/useUser';
+import { useConversas } from '../../hooks/useConversas';
+import VolumeChart from './components/charts/VolumeChart';
+import OrigemChart from './components/charts/OrigemChart';
+import DispositivosChart from './components/charts/DispositivosChart';
+import WelcomeHeader from './components/WelcomeHeader';
+
+const ChartContainer: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+  <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--sidebar-bg)' }}>
+    <h2 className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
+      {title}
+    </h2>
+    <div style={{ color: 'var(--text-primary)' }}>
+      {children}
+    </div>
+  </div>
+);
 
 const Dashboard: React.FC = () => {
-  const { userData } = useUser();
+  const { conversas, contagem, loading, error } = useConversas();
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-4 space-y-6">
-        <WelcomeBar userName={userData?.name || ''} />
-        <DashboardCharts />
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--sidebar-active-bg)' }}>
+      <WelcomeHeader />
+      
+      <div className="max-w-[1920px] mx-auto px-6 py-6">
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="animate-pulse rounded-lg p-4" style={{ backgroundColor: 'var(--sidebar-bg)' }}>
+                <div className="h-64 rounded-lg" style={{ backgroundColor: 'var(--bg-secondary)', opacity: 0.5 }}></div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {error && (
+          <div className="p-4 rounded-lg text-center" style={{ backgroundColor: 'var(--sidebar-bg)', color: 'var(--error-color)' }}>
+            Erro ao carregar dados dos gráficos: {error}
+          </div>
+        )}
+
+        {!loading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ChartContainer title="Volume de Mensagens">
+              <VolumeChart conversas={conversas} />
+            </ChartContainer>
+
+            <ChartContainer title="Origem das Mensagens">
+              <OrigemChart contagem={contagem} />
+            </ChartContainer>
+
+            <ChartContainer title="Distribuição por Dispositivo">
+              <DispositivosChart conversas={conversas} />
+            </ChartContainer>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ interface MobileMenuProps {
   userName: string;
   userProfile?: string;
   activeScreen: string;
-  setActiveScreen: (screen: 'dashboard' | 'training') => void;
+  setActiveScreen: (screen: 'dashboard' | 'training' | 'personalizar' | 'projetos' | 'knowledge-bases' | 'whatsapp') => void;
 }
 
 const MobileMenu = ({ userName, userProfile, activeScreen, setActiveScreen }: MobileMenuProps) => {

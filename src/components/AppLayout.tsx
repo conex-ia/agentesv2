@@ -9,7 +9,7 @@ interface AppLayoutProps {
   children: React.ReactNode;
 }
 
-type ActiveScreen = 'dashboard' | 'training' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
+type ActiveScreen = 'dashboard' | 'training' | 'projetos' | 'knowledge-bases' | 'whatsapp';
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const { userData } = useUser();

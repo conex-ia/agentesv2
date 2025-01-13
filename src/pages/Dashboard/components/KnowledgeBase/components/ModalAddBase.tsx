@@ -88,17 +88,23 @@ export const ModalAddBase: React.FC<ModalAddBaseProps> = ({
     try {
       const projectUid = selectedProject.trim();
       
-      console.log('Projeto selecionado:', {
-        uid: projectUid
+      console.log('Enviando dados para criar base:', {
+        nome: name.trim(),
+        projetoUid: projectUid
       });
 
       const result = await onConfirm(name.trim(), projectUid);
-      console.log('Workflow iniciado:', result);
-      setName('');
-      setSelectedProject('');
-      onClose();
+      console.log('Resultado da criação da base:', result);
+      
+      // Só limpa e fecha se tiver sucesso
+      if (result) {
+        setName('');
+        setSelectedProject('');
+        onClose();
+      }
     } catch (error: any) {
       console.error('Erro ao criar base no modal:', error);
+      // Aqui poderíamos mostrar uma mensagem de erro para o usuário
     } finally {
       setIsAdding(false);
     }

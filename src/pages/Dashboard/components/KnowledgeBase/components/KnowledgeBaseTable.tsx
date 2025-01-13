@@ -87,15 +87,16 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                 className="border-b"
                 style={{ borderColor: 'var(--border-color)' }}
               >
-                <td className="p-4">
+                <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div 
-                      className="w-10 h-10 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: 'var(--status-success-bg)' }}
-                    >
+                    <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-700/50 flex items-center justify-center flex-shrink-0">
                       <Database size={20} style={{ color: 'var(--status-success-color)' }} />
                     </div>
-                    <span style={{ color: 'var(--text-primary)' }}>{base.nome}</span>
+                    <div>
+                      <div style={{ color: 'var(--text-primary)' }} className="font-medium">
+                        {base.nome.split('_')[0]}
+                      </div>
+                    </div>
                   </div>
                 </td>
                 <td className="p-4" style={{ color: 'var(--text-primary)' }}>

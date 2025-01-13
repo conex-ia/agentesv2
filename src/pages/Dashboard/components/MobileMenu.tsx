@@ -7,14 +7,14 @@ import useAuth from '../../../stores/useAuth';
 interface MobileMenuProps {
   userName: string;
   userProfile?: string | null;
-  activeScreen: 'dashboard' | 'training' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
-  setActiveScreen: (screen: 'dashboard' | 'training' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp') => void;
+  activeScreen: 'dashboard' | 'training' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
+  setActiveScreen: (screen: 'dashboard' | 'training' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp') => void;
 }
 
-type ActiveScreen = 'dashboard' | 'training' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
+type ActiveScreen = 'dashboard' | 'training' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
 
 function isValidScreen(screen: string): screen is ActiveScreen {
-  return ['dashboard', 'training', 'assistants', 'projetos', 'knowledge-bases', 'whatsapp'].includes(screen);
+  return ['dashboard', 'training', 'treinamentos', 'assistants', 'projetos', 'knowledge-bases', 'whatsapp'].includes(screen);
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({
@@ -29,15 +29,18 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
 
   const handleLogout = () => {
     clearAuth();
-    navigate('/');
+    // Pequeno delay para garantir que os dados foram limpos
+    setTimeout(() => {
+      navigate('/');
+    }, 100);
   };
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', screen: 'dashboard' },
     { icon: MessageCircle, label: 'WhatsApp', screen: 'whatsapp' },
-    { icon: Bot, label: 'Assistentes', screen: 'assistants' },
     { icon: FolderOpen, label: 'Projetos', screen: 'projetos' },
     { icon: GraduationCap, label: 'Treinamento', screen: 'training' },
+    { icon: GraduationCap, label: 'Treinamentos', screen: 'treinamentos' },
     { icon: BarChart2, label: 'Estatísticas', screen: null },
   ] as const;
 
@@ -71,9 +74,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                           setActiveScreen(item.screen);
                           if (item.screen === 'dashboard') navigate('/dashboard');
                           else if (item.screen === 'whatsapp') navigate('/whatsapp');
-                          else if (item.screen === 'assistants') navigate('/assistants');
                           else if (item.screen === 'projetos') navigate('/projetos');
                           else if (item.screen === 'training') navigate('/training');
+                          else if (item.screen === 'treinamentos') navigate('/treinamentos');
                         }
                       }}
                       className={`flex items-center gap-3 px-3 py-2 rounded-lg w-full transition-colors

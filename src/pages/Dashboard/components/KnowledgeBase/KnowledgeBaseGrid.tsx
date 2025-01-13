@@ -8,14 +8,12 @@ import { ViewKnowledgeBaseModal } from './components/ViewKnowledgeBaseModal';
 import { EmptyState } from '../../../../components/EmptyState';
 import { ITEMS_PER_PAGE } from './constants';
 import Pagination from '../../../../components/Pagination';
-import { KnowledgeBaseHeader } from './components/KnowledgeBaseHeader';
 import { ModalDeleteBase } from './components/ModalDeleteBase';
 import { ModalAddBase } from './components/ModalAddBase';
 
 interface KnowledgeBaseGridProps {
   bases: KnowledgeBase[];
   viewType: 'grid' | 'table';
-  onViewTypeChange: (type: 'grid' | 'table') => void;
   isDeletingBase?: string | null;
   onDeleteBase?: (baseId: string) => Promise<{ success: boolean; message: string }>;
   onAddBase: (name: string, projectId: string) => Promise<string>;
@@ -24,7 +22,6 @@ interface KnowledgeBaseGridProps {
 export const KnowledgeBaseGrid = ({
   bases,
   viewType,
-  onViewTypeChange,
   isDeletingBase,
   onDeleteBase,
   onAddBase
@@ -122,36 +119,38 @@ export const KnowledgeBaseGrid = ({
 
   return (
     <>
-      {viewType === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currentBases.map(base => (
-            <KnowledgeBaseCard
-              key={base.uid}
-              base={base}
-              onOpenViewModal={handleOpenViewModal}
-              onOpenDeleteModal={handleOpenDeleteModal}
-              isDeletingBase={isDeletingBase || null}
-            />
-          ))}
-        </div>
-      ) : (
-        <KnowledgeBaseTable
-          bases={currentBases}
-          onOpenViewModal={handleOpenViewModal}
-          onOpenDeleteModal={handleOpenDeleteModal}
-          isDeletingBase={isDeletingBase || null}
-        />
-      )}
-
-      {bases.length > ITEMS_PER_PAGE && (
-        <div className="mt-4 flex justify-center">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
+      <div className="space-y-6">
+        {viewType === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {currentBases.map(base => (
+              <KnowledgeBaseCard
+                key={base.uid}
+                base={base}
+                onOpenViewModal={handleOpenViewModal}
+                onOpenDeleteModal={handleOpenDeleteModal}
+                isDeletingBase={isDeletingBase || null}
+              />
+            ))}
+          </div>
+        ) : (
+          <KnowledgeBaseTable
+            bases={currentBases}
+            onOpenViewModal={handleOpenViewModal}
+            onOpenDeleteModal={handleOpenDeleteModal}
+            isDeletingBase={isDeletingBase || null}
           />
-        </div>
-      )}
+        )}
+
+        {bases.length > ITEMS_PER_PAGE && (
+          <div className="mt-4 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
+      </div>
 
       <ViewKnowledgeBaseModal
         isOpen={viewModal.isOpen}

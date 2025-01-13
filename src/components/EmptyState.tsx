@@ -22,8 +22,8 @@ export const EmptyState = ({ icon: Icon, title, description }: EmptyStateProps) 
           animate={{ opacity: 1, y: 0 }}
           className="rounded-lg p-6 shadow-lg text-center border"
           style={{ 
-            backgroundColor: 'var(--card-bg)',
-            borderColor: 'var(--card-border)',
+            backgroundColor: 'var(--bg-primary)',
+            borderColor: 'var(--border-primary)',
             color: 'var(--text-primary)'
           }}
         >

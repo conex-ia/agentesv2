@@ -125,10 +125,10 @@ const ProjetosGrid = ({
                   key={projeto.uid}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="!bg-transparent backdrop-blur-sm rounded-lg p-4 flex flex-col gap-4 border"
+                  className="rounded-lg p-4 flex flex-col gap-4 border"
                   style={{ 
-                    backgroundColor: 'var(--card-bg) !important',
-                    borderColor: 'var(--card-border)',
+                    backgroundColor: 'var(--bg-primary)',
+                    borderColor: 'var(--border-color)',
                     color: 'var(--text-primary)'
                   }}
                 >
@@ -157,16 +157,13 @@ const ProjetosGrid = ({
                       <button 
                         type="button"
                         onClick={() => handleOpenViewModal(projeto)}
-                        className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors"
+                        className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors hover:opacity-80"
                         style={{ 
                           backgroundColor: 'var(--status-success-bg)',
-                          ':hover': { 
-                            backgroundColor: 'var(--status-success-bg)',
-                            opacity: '0.8'
-                          }
+                          color: 'var(--status-success-color)'
                         }}
                       >
-                        <Eye size={24} style={{ color: 'var(--status-success-color)' }} />
+                        <Eye size={24} />
                       </button>
                       <span className="text-[9px] mt-1" style={{ color: 'var(--text-secondary)' }}>
                         visualizar
@@ -178,16 +175,13 @@ const ProjetosGrid = ({
                         type="button"
                         onClick={() => handleOpenDeleteModal(projeto)}
                         disabled={isDeletingProjeto === projeto.uid}
-                        className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
                         style={{ 
                           backgroundColor: 'var(--status-error-bg)',
-                          ':hover': { 
-                            backgroundColor: 'var(--status-error-bg)',
-                            opacity: '0.8'
-                          }
+                          color: 'var(--status-error-color)'
                         }}
                       >
-                        <Trash2 size={24} style={{ color: 'var(--status-error-color)' }} />
+                        <Trash2 size={24} />
                       </button>
                       <span className="text-[9px] mt-1" style={{ color: 'var(--text-secondary)' }}>
                         excluir
@@ -247,16 +241,13 @@ const ProjetosGrid = ({
                               <button 
                                 type="button"
                                 onClick={() => handleOpenViewModal(projeto)}
-                                className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors"
+                                className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors hover:opacity-80"
                                 style={{ 
                                   backgroundColor: 'var(--status-success-bg)',
-                                  ':hover': { 
-                                    backgroundColor: 'var(--status-success-bg)',
-                                    opacity: '0.8'
-                                  }
+                                  color: 'var(--status-success-color)'
                                 }}
                               >
-                                <Eye size={24} style={{ color: 'var(--status-success-color)' }} />
+                                <Eye size={24} />
                               </button>
                               <span className="text-[9px] mt-1" style={{ color: 'var(--text-secondary)' }}>
                                 visualizar
@@ -267,16 +258,13 @@ const ProjetosGrid = ({
                                 type="button"
                                 onClick={() => handleOpenDeleteModal(projeto)}
                                 disabled={isDeletingProjeto === projeto.uid}
-                                className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
                                 style={{ 
                                   backgroundColor: 'var(--status-error-bg)',
-                                  ':hover': { 
-                                    backgroundColor: 'var(--status-error-bg)',
-                                    opacity: '0.8'
-                                  }
+                                  color: 'var(--status-error-color)'
                                 }}
                               >
-                                <Trash2 size={24} style={{ color: 'var(--status-error-color)' }} />
+                                <Trash2 size={24} />
                               </button>
                               <span className="text-[9px] mt-1" style={{ color: 'var(--text-secondary)' }}>
                                 excluir

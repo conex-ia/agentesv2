@@ -125,7 +125,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex-1 min-w-0">
               <h2 
                 className="text-sm font-medium truncate"
-                style={{ color: 'var(--text-primary)' }}
+                style={{ color: 'var(--text-secondary)' }}
               >
                 {userName}
               </h2>

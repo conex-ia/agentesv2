@@ -16,7 +16,7 @@ export interface KnowledgeBase {
 }
 
 export const useKnowledgeBases = () => {
-  const { empresaUid } = useAuth();
+  const { empresaUid, userUid } = useAuth();
   const [bases, setBases] = useState<KnowledgeBase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,39 +54,42 @@ export const useKnowledgeBases = () => {
     setIsDeletingBase(baseUid);
     
     try {
-      // Primeiro faz o soft delete da base (update ativa = false)
-      const { error: updateError } = await supabase
-        .from('conex-bases_t')
-        .update({ ativa: false })
-        .eq('uid', baseUid);
-
-      if (updateError) {
-        console.error('[useKnowledgeBases] Erro ao desativar base:', updateError);
-        throw updateError;
+      if (!empresaUid || !userUid) {
+        throw new Error('Usuário não autenticado');
       }
 
-      // Aguarda 1 segundo
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Depois faz o hard delete da base
-      const { error: deleteError } = await supabase
-        .from('conex-bases_t')
-        .delete()
-        .eq('uid', baseUid);
+      const body = {
+        acao: 'excluirTabela',
+        empresaUid,
+        userUid,
+        baseUid
+      };
 
-      if (deleteError) {
-        console.error('[useKnowledgeBases] Erro ao excluir base:', deleteError);
-        throw deleteError;
+      console.log('[useKnowledgeBases] Enviando POST com body:', body);
+
+      const response = await fetch('https://webhook.conexcondo.com.br/webhook/cod-gerenciartabela', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[useKnowledgeBases] Erro na resposta do webhook:', errorText);
+        throw new Error(`Erro ao excluir base: ${response.statusText}. ${errorText}`);
       }
 
-      console.log('[useKnowledgeBases] Base excluída com sucesso:', baseUid);
-      await fetchBases(); // Atualiza a lista após deletar
+      const result = await response.json();
+      console.log('[useKnowledgeBases] Resposta do webhook:', result);
+
       return { success: true, message: 'Base excluída com sucesso' };
     } catch (err) {
       console.error('[useKnowledgeBases] Erro ao excluir base:', err);
       return { 
         success: false, 
-        error: err instanceof Error ? err.message : 'Erro ao excluir base' 
+        message: err instanceof Error ? err.message : 'Erro ao excluir base' 
       };
     } finally {
       setIsDeletingBase(null);
@@ -96,21 +99,45 @@ export const useKnowledgeBases = () => {
   const addBase = async (nome: string, projetoUid: string) => {
     try {
       console.log('[useKnowledgeBases] Criando nova base:', { nome, projetoUid });
-      const { data, error } = await supabase
-        .from('conex-bases_t')
-        .insert([
-          {
-            nome,
-            projeto: projetoUid,
-            titular: empresaUid,
-            ativa: true
-          }
-        ]);
+      
+      if (!empresaUid || !userUid) {
+        throw new Error('Usuário não autenticado');
+      }
 
-      if (error) throw error;
+      const body = {
+        acao: 'criarTabela',
+        empresaUid,
+        userUid,
+        nome,
+        projetoUid
+      };
 
-      console.log('[useKnowledgeBases] Base criada com sucesso, workflow iniciado');
-      return 'Workflow started';
+      console.log('[useKnowledgeBases] Enviando POST com body:', body);
+
+      // Faz o POST para o webhook com a URL correta
+      const response = await fetch('https://webhook.conexcondo.com.br/webhook/cod-gerenciartabela', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body)
+      });
+
+      console.log('[useKnowledgeBases] Status da resposta:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[useKnowledgeBases] Erro na resposta:', errorText);
+        throw new Error(`Erro ao criar base: ${response.statusText}. ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('[useKnowledgeBases] Base criada com sucesso:', result);
+      
+      // Atualiza a lista de bases
+      await fetchBases();
+      
+      return result;
     } catch (err) {
       console.error('[useKnowledgeBases] Erro ao criar base:', err);
       throw err;

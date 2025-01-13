@@ -1,3 +1,5 @@
+@import './styles/themes.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,7 +7,7 @@
 @layer utilities {
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #10b981 #1f2937;
+    scrollbar-color: var(--accent-color) var(--bg-secondary);
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -14,17 +16,17 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: #1f2937;
+    background: var(--bg-secondary);
     border-radius: 3px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #10b981;
+    background-color: var(--accent-color);
     border-radius: 3px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-corner {
-    background: #1f2937;
+    background: var(--bg-secondary);
   }
 }
 

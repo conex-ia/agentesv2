@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../stores/useAuth';
 import { supabase } from '../lib/supabase';
-import type { TrainingData } from '../pages/Dashboard/components/Training/types';
+import type { TrainingData } from '../types/training';
 
 export function useTrainingData() {
   const [trainings, setTrainings] = useState<TrainingData[]>([]);
@@ -50,11 +50,8 @@ export function useTrainingData() {
           await fetchTrainings();
         }
       )
-      .subscribe((status) => {
-        console.log('Realtime subscription status:', status);
-      });
+      .subscribe();
 
-    // Cleanup
     return () => {
       subscription.unsubscribe();
     };
@@ -62,3 +59,5 @@ export function useTrainingData() {
 
   return { trainings, loading };
 }
+
+export type { TrainingData };

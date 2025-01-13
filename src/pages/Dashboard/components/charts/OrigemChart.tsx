@@ -1,42 +1,25 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { Conversa, ContagemPorOrigem } from '../../../../hooks/useConversas';
+import { ContagemPorOrigem } from '../../../../hooks/useConversas';
 
 interface OrigemChartProps {
-  conversas: Conversa[];
   contagem: ContagemPorOrigem;
 }
 
-interface ChartData {
-  name: string;
-  value: number;
-  color: string;
-}
-
-const DADOS_ORIGEM = [
-  { id: 'Assistente', color: 'var(--accent-color)' },
-  { id: 'Humano', color: 'var(--warning-color)' }
-] as const;
+const COLORS = {
+  assistente: 'var(--accent-color)',
+  humano: 'var(--warning-color)'
+};
 
 const OrigemChart: React.FC<OrigemChartProps> = ({ contagem }) => {
-  const data = useMemo(() => {
-    console.log('[OrigemChart] Usando contagem:', contagem);
+  const data = [
+    { name: 'Assistente', value: contagem.assistente },
+    { name: 'Humano', value: contagem.humano }
+  ];
 
-    return [
-      {
-        name: 'Assistente',
-        value: contagem.assistente,
-        color: 'var(--accent-color)'
-      },
-      {
-        name: 'Humano',
-        value: contagem.humano,
-        color: 'var(--warning-color)'
-      }
-    ];
-  }, [contagem]);
+  const total = contagem.assistente + contagem.humano;
 
-  if (data.every(item => item.value === 0)) {
+  if (total === 0) {
     return (
       <div 
         className="h-64 flex items-center justify-center text-lg"
@@ -46,8 +29,6 @@ const OrigemChart: React.FC<OrigemChartProps> = ({ contagem }) => {
       </div>
     );
   }
-
-  const total = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -60,15 +41,11 @@ const OrigemChart: React.FC<OrigemChartProps> = ({ contagem }) => {
           outerRadius={80}
           paddingAngle={5}
           dataKey="value"
-          startAngle={90}
-          endAngle={450}
         >
-          {data.map((entry) => (
+          {data.map((entry, index) => (
             <Cell 
-              key={entry.name}
-              fill={entry.color}
-              strokeWidth={1}
-              stroke="var(--bg-primary)"
+              key={`cell-${index}`} 
+              fill={COLORS[entry.name.toLowerCase() as keyof typeof COLORS]}
             />
           ))}
         </Pie>
@@ -80,22 +57,17 @@ const OrigemChart: React.FC<OrigemChartProps> = ({ contagem }) => {
           }}
           labelStyle={{ color: 'var(--text-primary)' }}
           itemStyle={{ color: 'var(--text-secondary)' }}
-          formatter={(value: number, name: string) => [
-            `${value} mensagens (${((value / total) * 100).toFixed(1)}%)`,
-            name
+          formatter={(value: number) => [
+            `${value} (${((value / total) * 100).toFixed(1)}%)`,
+            'Mensagens'
           ]}
         />
-        <Legend 
-          verticalAlign="bottom" 
+        <Legend
+          verticalAlign="bottom"
           height={36}
-          formatter={(value: string, entry: any) => {
-            const item = data.find(d => d.name === value);
-            return (
-              <span style={{ color: 'var(--text-secondary)' }}>
-                {value} ({item?.value || 0})
-              </span>
-            );
-          }}
+          formatter={(value: string) => (
+            <span style={{ color: 'var(--text-primary)' }}>{value}</span>
+          )}
         />
       </PieChart>
     </ResponsiveContainer>

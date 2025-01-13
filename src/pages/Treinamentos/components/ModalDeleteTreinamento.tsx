@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, CheckCircle2 } from 'lucide-react';
 
@@ -20,6 +20,12 @@ const ModalDeleteTreinamento = ({
   trainingBase = 'Aguardando'
 }: ModalDeleteTreinamentoProps) => {
   const [isDeleted, setIsDeleted] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsDeleted(false);
+    }
+  }, [isOpen]);
 
   const handleConfirm = async () => {
     try {

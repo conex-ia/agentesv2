@@ -67,38 +67,52 @@ const ViewProjetoModal: React.FC<ViewProjetoModalProps> = ({
               </div>
 
               <div className="p-6">
-                <div className="bg-gray-700/50 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-white mb-4">Informações</h4>
+                <div 
+                  className="rounded-lg p-4"
+                  style={{ backgroundColor: 'var(--bg-secondary)' }}
+                >
+                  <h4 
+                    className="text-lg font-semibold mb-4"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    Informações
+                  </h4>
                   <div className="space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
                     <div>
-                      <span className="text-gray-400">Nome</span>
-                      <p className="text-white">{projeto.nome}</p>
+                      <span style={{ color: 'var(--text-secondary)' }}>Nome</span>
+                      <p style={{ color: 'var(--text-primary)' }}>{projeto.nome}</p>
                     </div>
 
                     <div>
-                      <span className="text-gray-400">Data de Criação</span>
-                      <p className="text-white">{formatDate(projeto.created_at)}</p>
+                      <span style={{ color: 'var(--text-secondary)' }}>Data de Criação</span>
+                      <p style={{ color: 'var(--text-primary)' }}>{formatDate(projeto.created_at)}</p>
                     </div>
 
                     <div>
-                      <span className="text-gray-400">Bases de Conhecimento</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>Bases de Conhecimento</span>
                       {loading ? (
                         <div className="mt-2 animate-pulse">
-                          <div className="h-10 bg-gray-700 rounded-lg"></div>
+                          <div className="h-10 rounded-lg" style={{ backgroundColor: 'var(--bg-primary)' }}></div>
                         </div>
                       ) : projeto.bases && projeto.bases.length > 0 ? (
                         <div className="mt-2 space-y-2">
                           {projeto.bases.map((baseId) => (
                             <div 
                               key={baseId}
-                              className="bg-gray-700 p-3 rounded-lg text-gray-300"
+                              className="p-3 rounded-lg"
+                              style={{ 
+                                backgroundColor: 'var(--bg-primary)',
+                                color: 'var(--text-primary)'
+                              }}
                             >
                               {baseNames[baseId] || 'Base não encontrada'}
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <p className="text-gray-300 mt-2">Sem base de conhecimento vinculada</p>
+                        <p style={{ color: 'var(--text-secondary)' }} className="mt-2">
+                          Sem base de conhecimento vinculada
+                        </p>
                       )}
                     </div>
 

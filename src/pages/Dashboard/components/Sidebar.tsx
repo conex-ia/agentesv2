@@ -16,7 +16,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../../stores/useAuth';
 
-type ActiveScreen = 'dashboard' | 'training' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
+type ActiveScreen = 'dashboard' | 'training' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -40,7 +40,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleLogout = () => {
     clearAuth();
-    navigate('/');
+    // Pequeno delay para garantir que os dados foram limpos
+    setTimeout(() => {
+      navigate('/');
+    }, 100);
   };
 
   const handleScreenChange = (screen: ActiveScreen | null) => {
@@ -48,9 +51,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       setActiveScreen(screen);
       if (screen === 'dashboard') navigate('/dashboard');
       else if (screen === 'whatsapp') navigate('/whatsapp');
-      else if (screen === 'assistants') navigate('/assistants');
       else if (screen === 'projetos') navigate('/projetos');
       else if (screen === 'training') navigate('/training');
+      else if (screen === 'treinamentos') navigate('/treinamentos');
     }
   };
 
@@ -61,31 +64,36 @@ const Sidebar: React.FC<SidebarProps> = ({
       icon: LayoutDashboard, 
       label: 'Dashboard', 
       screen: 'dashboard' as ActiveScreen,
+      path: '/dashboard',
       active: activeScreen === 'dashboard'
     },
     { 
       icon: MessageCircle,
       label: 'WhatsApp',
       screen: 'whatsapp' as ActiveScreen,
+      path: '/whatsapp',
       active: activeScreen === 'whatsapp'
-    },
-    { 
-      icon: Bot, 
-      label: 'Personalizar', 
-      screen: 'assistants' as ActiveScreen,
-      active: activeScreen === 'assistants'
     },
     { 
       icon: FolderOpen, 
       label: 'Projetos', 
       screen: 'projetos' as ActiveScreen,
+      path: '/projetos',
       active: activeScreen === 'projetos'
     },
     { 
       icon: GraduationCap, 
       label: 'Treinamento', 
       screen: 'training' as ActiveScreen,
+      path: '/training',
       active: activeScreen === 'training'
+    },
+    { 
+      icon: GraduationCap, 
+      label: 'Treinamentos', 
+      screen: 'treinamentos' as ActiveScreen,
+      path: '/treinamentos',
+      active: activeScreen === 'treinamentos'
     },
     { icon: BarChart2, label: 'Estatísticas', screen: null, active: false }
   ];
@@ -114,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           />
           {!isCollapsed && (
             <div className="flex-1 min-w-0">
-              <h2 className="text-sm font-medium text-white truncate">
+              <h2 className="text-sm font-medium text-[var(--sidebar-text)] truncate">
                 {userName}
               </h2>
             </div>

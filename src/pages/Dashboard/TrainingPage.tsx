@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { Training } from './components/Training';
-import type { TrainingData } from './components/Training';
+import { useNavigate } from 'react-router-dom';
+import type { TrainingData } from './components/types/training';
 import { useTrainingData } from '../../hooks/useTrainingData';
+import { useKnowledgeBases } from '../../hooks/useKnowledgeBases';
+import { Training } from './components/Training';
 import { EmptyState } from '../../components/EmptyState';
 import { GraduationCap } from 'lucide-react';
 
-const TrainingPage = () => {
+const TrainingPage: React.FC = () => {
+  const navigate = useNavigate();
   const { trainings, loading } = useTrainingData();
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const { bases, loading: basesLoading } = useKnowledgeBases();
+  const [currentPage, setCurrentPage] = useState(1);
   const [viewType, setViewType] = useState<'grid' | 'table'>('grid');
   const [isDeletingTraining, setIsDeletingTraining] = useState<string | null>(null);
 
@@ -22,7 +26,7 @@ const TrainingPage = () => {
     setIsDeletingTraining(training.uid);
   };
 
-  if (loading) {
+  if (loading || basesLoading) {
     return (
       <div className="w-full px-4">
         <div className="max-w-[1370px] mx-auto">
@@ -56,20 +60,32 @@ const TrainingPage = () => {
   }
 
   return (
-    <div className="w-full px-4 pt-4">
-      <div className="max-w-[1370px] mx-auto">
-        <Training
-          trainings={trainings}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          onOpenModal={handleOpenModal}
-          onOpenDeleteModal={handleOpenDeleteModal}
-          isDeletingTraining={isDeletingTraining}
-          viewMode={viewType}
-        />
+    <div className="flex flex-col gap-8 p-8">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Treinamentos</h1>
+        <button
+          onClick={() => navigate('/training/new')}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Novo Treinamento
+        </button>
+      </div>
+
+      <div className="w-full px-4 pt-4">
+        <div className="max-w-[1370px] mx-auto">
+          <Training
+            trainings={trainings}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            onOpenModal={handleOpenModal}
+            onOpenDeleteModal={handleOpenDeleteModal}
+            isDeletingTraining={isDeletingTraining}
+            viewMode={viewType}
+          />
+        </div>
       </div>
     </div>
   );
 };
 
-export default TrainingPage; 
+export default TrainingPage;

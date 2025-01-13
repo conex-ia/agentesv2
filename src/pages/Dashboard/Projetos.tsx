@@ -6,9 +6,7 @@ import useAuth from '../../stores/useAuth';
 import { supabase } from '../../lib/supabase';
 import ProjetosGrid from './components/ProjetosGrid';
 import AddProjetoModal from './components/AddProjetoModal';
-import WelcomeBar from './components/WelcomeBar';
 import ProjetosHeader from './components/ProjetosHeader';
-import StatsCards from './components/StatsCards';
 
 const Projetos = () => {
   const { empresaUid } = useAuth();

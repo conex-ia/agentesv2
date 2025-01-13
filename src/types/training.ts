@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
-
 export interface TrainingData {
   uid: string;
   resumo: string;
@@ -18,7 +16,8 @@ export interface TrainingProps {
   onOpenModal: (id: string, phase: string) => void;
   onOpenDeleteModal: (training: TrainingData) => void;
   isDeletingTraining: string | null;
-  viewMode: 'grid' | 'table';
+  viewType: 'grid' | 'table';
+  onViewTypeChange: (type: 'grid' | 'table') => void;
 }
 
 export interface TrainingGridProps {
@@ -28,6 +27,7 @@ export interface TrainingGridProps {
   onOpenModal: (id: string, phase: string) => void;
   onOpenDeleteModal: (training: TrainingData) => void;
   isDeletingTraining: string | null;
+  viewType: 'grid' | 'table';
 }
 
 export interface ActionButtonProps {

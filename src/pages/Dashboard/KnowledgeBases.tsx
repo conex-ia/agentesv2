@@ -1,9 +1,8 @@
 import React from 'react';
 import { useKnowledgeBases } from '../../hooks/useKnowledgeBases';
 import { LoadingState } from '../../components/LoadingState';
-import { KnowledgeBaseGrid } from './components/KnowledgeBase/index';
+import { KnowledgeBasePage } from './components/KnowledgeBase/KnowledgeBasePage';
 import WelcomeBar from './components/WelcomeBar';
-import { KnowledgeBaseHeader } from './components/KnowledgeBase/components/KnowledgeBaseHeader';
 import useAuth from '../../stores/useAuth';
 
 interface KnowledgeBasesProps {
@@ -17,7 +16,7 @@ const KnowledgeBases: React.FC<KnowledgeBasesProps> = ({
   onViewTypeChange,
   userName = ''
 }) => {
-  const { bases, loading: basesLoading } = useKnowledgeBases();
+  const { loading: basesLoading } = useKnowledgeBases();
   const { userUid } = useAuth();
 
   if (basesLoading) {
@@ -32,14 +31,7 @@ const KnowledgeBases: React.FC<KnowledgeBasesProps> = ({
         activeScreen="knowledge-bases"
       />
       <div className="max-w-7xl mx-auto space-y-6">
-        <KnowledgeBaseHeader
-          viewType={viewType}
-          onViewTypeChange={onViewTypeChange}
-          onAddBase={() => {}}
-          isAddingBase={false}
-        />
-        <KnowledgeBaseGrid
-          bases={bases}
+        <KnowledgeBasePage
           viewType={viewType}
           onViewTypeChange={onViewTypeChange}
         />

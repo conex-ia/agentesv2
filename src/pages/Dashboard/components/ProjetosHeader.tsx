@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FolderOpen, Plus, LayoutGrid, Table } from 'lucide-react';
+import { FolderOpen, Plus, LayoutGrid, List } from 'lucide-react';
 
 interface ProjetosHeaderProps {
   onAddProjeto: () => void;
@@ -18,7 +18,7 @@ const ProjetosHeader: React.FC<ProjetosHeaderProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="rounded-lg p-4 sm:p-6 md:p-8 shadow-lg"
-      style={{ backgroundColor: 'var(--sidebar-bg)' }}
+      style={{ backgroundColor: 'var(--bg-primary)' }}
     >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
         <div className="flex items-center gap-3 sm:gap-4">
@@ -36,28 +36,32 @@ const ProjetosHeader: React.FC<ProjetosHeaderProps> = ({
               Projetos
             </h1>
             <div 
-              className="inline-flex rounded-lg p-1"
-              style={{ backgroundColor: 'var(--button-secondary-bg)' }}
+              className="flex items-center gap-2 p-1 rounded-lg" 
+              style={{ backgroundColor: 'var(--bg-secondary)' }}
             >
               <button
-                onClick={() => onViewTypeChange('grid')}
-                className="p-2 rounded-lg transition-colors"
+                onClick={() => onViewTypeChange('table')}
+                className="p-2 rounded-lg transition-all"
                 style={{ 
-                  backgroundColor: viewType === 'grid' ? 'var(--button-primary-bg)' : 'transparent',
-                  color: viewType === 'grid' ? 'var(--button-primary-text)' : 'var(--text-secondary)'
+                  backgroundColor: viewType === 'table' ? 'var(--bg-primary)' : 'transparent',
+                  color: viewType === 'table' ? 'var(--accent-color)' : 'var(--text-secondary)',
+                  boxShadow: viewType === 'table' ? 'var(--shadow-elevation-low)' : 'none',
+                  border: viewType === 'table' ? '1px solid var(--border-color)' : 'none'
                 }}
               >
-                <LayoutGrid className="w-5 h-5" />
+                <List size={20} />
               </button>
               <button
-                onClick={() => onViewTypeChange('table')}
-                className="p-2 rounded-lg transition-colors"
+                onClick={() => onViewTypeChange('grid')}
+                className="p-2 rounded-lg transition-all"
                 style={{ 
-                  backgroundColor: viewType === 'table' ? 'var(--button-primary-bg)' : 'transparent',
-                  color: viewType === 'table' ? 'var(--button-primary-text)' : 'var(--text-secondary)'
+                  backgroundColor: viewType === 'grid' ? 'var(--bg-primary)' : 'transparent',
+                  color: viewType === 'grid' ? 'var(--accent-color)' : 'var(--text-secondary)',
+                  boxShadow: viewType === 'grid' ? 'var(--shadow-elevation-low)' : 'none',
+                  border: viewType === 'grid' ? '1px solid var(--border-color)' : 'none'
                 }}
               >
-                <Table className="w-5 h-5" />
+                <LayoutGrid size={20} />
               </button>
             </div>
           </div>
