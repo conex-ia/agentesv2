@@ -1,29 +1,39 @@
 import { BotData } from '../../../hooks/useBots';
 import { KnowledgeBase } from '../../../hooks/useKnowledgeBases';
+import { ProjetoOption } from '../../../hooks/useProjetosSelect';
 import { Bot, Wifi, QrCode, Power, RefreshCw, Pause, Trash2 } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 
 interface AssistantTableProps {
   bots: BotData[];
   bases: KnowledgeBase[];
+  projetos: ProjetoOption[];
   onBaseChange: (botUid: string, baseUid: string) => void;
   onSync: (bot: BotData) => void;
   onPause: (bot: BotData) => void;
   onDelete: (bot: BotData) => void;
   onCustomize: (bot: BotData) => void;
+  onProjectChange: (botUid: string, projectId: string) => void;
 }
 
 const AssistantTable = ({
   bots,
   bases,
+  projetos,
   onBaseChange,
   onSync,
   onPause,
   onDelete,
   onCustomize,
+  onProjectChange,
 }: AssistantTableProps) => {
   const getBotName = (fullName: string) => {
     return fullName.split('.')[0];
+  };
+
+  const formatLabel = (label: string) => {
+    if (!label || label === 'Vincule uma Base' || label === 'Desvincular Base' || label === 'Crie uma Base') return label;
+    return label.split('_')[0];
   };
 
   // Mapeamento de nome para uid
@@ -78,6 +88,7 @@ const AssistantTable = ({
           }}>
             <th className="text-left p-4 font-medium text-sm" style={{ color: 'var(--text-secondary)' }}>Perfil</th>
             <th className="text-left p-4 font-medium text-sm" style={{ color: 'var(--text-secondary)' }}>Nome</th>
+            <th className="text-left p-4 font-medium text-sm" style={{ color: 'var(--text-secondary)' }}>Projeto</th>
             <th className="text-center p-4 font-medium text-sm" style={{ color: 'var(--text-secondary)' }}>Status da Conexão</th>
             <th className="text-left p-4 font-medium text-sm" style={{ color: 'var(--text-secondary)' }}>Número</th>
             <th className="text-center p-4 font-medium text-sm" style={{ color: 'var(--text-secondary)' }}>Status do Assistente</th>
@@ -105,6 +116,26 @@ const AssistantTable = ({
               </td>
               <td className="p-4">
                 <span style={{ color: 'var(--text-primary)' }} className="font-medium">{getBotName(bot.bot_nome)}</span>
+              </td>
+              <td className="p-4">
+                <select
+                  className="w-full px-3 py-2 rounded-lg text-sm transition-shadow focus:outline-none focus:ring-2"
+                  style={{
+                    backgroundColor: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-primary)',
+                    boxShadow: 'var(--shadow-elevation-low)'
+                  }}
+                  value={bot.projeto || ""}
+                  onChange={(e) => onProjectChange(bot.uid, e.target.value)}
+                >
+                  <option value="">Selecione um projeto</option>
+                  {projetos.map((projeto) => (
+                    <option key={projeto.uid} value={projeto.uid}>
+                      {projeto.nome}
+                    </option>
+                  ))}
+                </select>
               </td>
               <td className="p-4">
                 <div className="flex items-center justify-center">
@@ -170,7 +201,7 @@ const AssistantTable = ({
                     )}
                     {bases.map((base) => (
                       <option key={base.uid} value={base.nome || ''}>
-                        {base.nome || 'Base sem nome'}
+                        {formatLabel(base.nome || 'Base sem nome')}
                       </option>
                     ))}
                   </select>

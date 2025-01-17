@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { BotData } from '../../../hooks/useBots';
 import { KnowledgeBase } from '../../../hooks/useKnowledgeBases';
+import { ProjetoOption } from '../../../hooks/useProjetosSelect';
+import { useProject } from '../../../contexts/ProjectContext';
 import AssistantTable from './AssistantTable';
 import AssistantCards from './AssistantCards';
-import { ChevronRight, ChevronLeft, Bot } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Bot as BotIcon } from 'lucide-react';
 import ConfirmationModal from '../../../pages/Dashboard/components/ConfirmationModal';
 import { EmptyState } from '../../../components/EmptyState';
 
@@ -12,36 +14,50 @@ const ITEMS_PER_PAGE = 6;
 interface AssistantGridProps {
   bots: BotData[];
   bases: KnowledgeBase[];
+  projetos: ProjetoOption[];
   viewType: 'grid' | 'table';
   onBaseChange: (botUid: string, baseUid: string) => void;
   onSync: (bot: BotData) => void;
   onPause: (bot: BotData) => void;
   onDelete: (bot: BotData) => void;
   onCustomize: (bot: BotData) => void;
+  onProjectChange: (botUid: string, projectId: string) => void;
 }
 
 const AssistantGrid = ({
   bots,
   bases,
+  projetos,
   viewType,
   onBaseChange,
   onSync,
   onPause,
   onDelete,
-  onCustomize
+  onCustomize,
+  onProjectChange
 }: AssistantGridProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [inputPage, setInputPage] = useState(currentPage.toString());
   const [selectedBot, setSelectedBot] = useState<BotData | null>(null);
   const [modalType, setModalType] = useState<'pause' | 'delete' | null>(null);
+  const { selectedProject } = useProject();
+
+  // Encontra o nome do projeto selecionado
+  const selectedProjectName = selectedProject !== 'all' 
+    ? projetos.find(p => p.uid === selectedProject)?.nome 
+    : null;
 
   // Verifica se não há bots para exibir
   if (bots.length === 0) {
     return (
       <EmptyState
-        icon={Bot}
-        title="Nenhum assistente encontrado"
-        description="Crie seu primeiro assistente clicando no botão 'Novo Assistente'"
+        icon={BotIcon}
+        title={selectedProject === 'all' 
+          ? "Nenhum assistente encontrado" 
+          : `Nenhum assistente vinculado ao projeto ${selectedProjectName}`}
+        description={selectedProject === 'all'
+          ? "Crie seu primeiro assistente clicando no botão 'Novo Assistente'"
+          : "Vincule um assistente a este projeto ou crie um novo assistente"}
       />
     );
   }
@@ -118,21 +134,25 @@ const AssistantGrid = ({
           <AssistantTable
             bots={currentBots}
             bases={bases}
+            projetos={projetos}
             onBaseChange={onBaseChange}
             onSync={onSync}
             onPause={handlePauseClick}
             onDelete={handleDeleteClick}
             onCustomize={onCustomize}
+            onProjectChange={onProjectChange}
           />
         ) : (
           <AssistantCards
             bots={currentBots}
             bases={bases}
+            projetos={projetos}
             onBaseChange={onBaseChange}
             onSync={onSync}
             onPause={handlePauseClick}
             onDelete={handleDeleteClick}
             onCustomize={onCustomize}
+            onProjectChange={onProjectChange}
           />
         )}
       </div>

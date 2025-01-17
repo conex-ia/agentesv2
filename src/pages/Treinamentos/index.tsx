@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useTrainingData } from '../../hooks/useTrainingData';
 import { useKnowledgeBases } from '../../hooks/useKnowledgeBases';
 import { ViewType } from './types';
@@ -13,11 +13,14 @@ import { TrainingData } from './types/training';
 import { KnowledgeBaseHeader } from './components/KnowledgeBaseHeader';
 import { EmptyState } from '../../components/EmptyState';
 import { Database, FileText } from 'lucide-react';
+import WelcomeHeader from '../Dashboard/components/WelcomeHeader';
+import { useProject } from '../../contexts/ProjectContext';
 
 const Treinamentos = () => {
   const { trainings, loading: trainingsLoading } = useTrainingData();
   const { bases, loading: basesLoading, error, deleteBase, addBase } = useKnowledgeBases();
   const { userUid, empresaUid } = useAuth();
+  const { selectedProject } = useProject();
   const [isAddingBase, setIsAddingBase] = useState(false);
   const [isAddingTraining, setIsAddingTraining] = useState(false);
   const [viewType, setViewType] = useState<ViewType>(() => {
@@ -35,6 +38,23 @@ const Treinamentos = () => {
   const [isTrainingModalOpen, setIsTrainingModalOpen] = useState(false);
 
   const loading = trainingsLoading || basesLoading;
+
+  // Filtro dos dados baseado no projeto selecionado
+  const filteredTrainings = useMemo(() => {
+    if (!trainings) return [];
+    if (selectedProject === 'all') {
+      return [...trainings]; // Criando uma nova referência do array
+    }
+    return trainings.filter(training => training.projeto === selectedProject);
+  }, [trainings, selectedProject]);
+
+  const filteredBases = useMemo(() => {
+    if (!bases) return [];
+    if (selectedProject === 'all') {
+      return [...bases]; // Criando uma nova referência do array
+    }
+    return bases.filter(base => base.projeto === selectedProject);
+  }, [bases, selectedProject]);
 
   const handleCloseAddBaseModal = () => {
     setIsAddingBase(false);
@@ -91,19 +111,22 @@ const Treinamentos = () => {
     }
   };
 
-  const handleOpenModal = (id: string, phase: string) => {
+  const handleOpenModal = useCallback((id: string, phase: string) => {
     const training = trainings.find(t => t.uid === id);
     if (training) {
       setSelectedTraining(training);
       setIsTrainingModalOpen(true);
     }
-  };
+  }, [trainings]);
 
-  const handleOpenDeleteModal = (training: TrainingData) => {
+  const handleOpenDeleteModal = useCallback((training: TrainingData) => {
     setSelectedTraining(training);
-    setIsDeletingTraining(training.uid);
     setIsDeleteModalOpen(true);
-  };
+  }, []);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
 
   const handleConfirmDelete = async () => {
     if (!selectedTraining) return { success: false, message: 'Treinamento não encontrado' };
@@ -155,94 +178,97 @@ const Treinamentos = () => {
   }
 
   return (
-    <div className="w-full px-4 pb-4 pt-4 sm:pb-6">
-      <div className="max-w-[1370px] mx-auto">
-        <div className="flex flex-col gap-6">
-          <div>
-            <KnowledgeBaseHeader
-              viewType={baseViewType}
-              onViewTypeChange={handleBaseViewTypeChange}
-              onAddBase={() => setIsAddingBase(true)}
-            />
-            <div className="mt-4">
-              {bases.length === 0 ? (
-                <div className="mt-4">
-                  <EmptyState
-                    icon={Database}
-                    title="Nenhuma base de conhecimento"
-                    description="Você ainda não possui nenhuma base de conhecimento. Crie uma nova base para começar."
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--sidebar-active-bg)' }}>
+      <WelcomeHeader route="treinamentos" />
+      <div className="w-full px-4 pb-4 pt-4 sm:pb-6">
+        <div className="max-w-[1370px] mx-auto">
+          <div className="flex flex-col gap-6">
+            <div>
+              <KnowledgeBaseHeader
+                viewType={baseViewType}
+                onViewTypeChange={handleBaseViewTypeChange}
+                onAddBase={() => setIsAddingBase(true)}
+              />
+              <div className="mt-4">
+                {filteredBases.length === 0 ? (
+                  <div className="mt-4">
+                    <EmptyState
+                      icon={Database}
+                      title="Nenhuma base de conhecimento"
+                      description="Você ainda não possui nenhuma base de conhecimento. Crie uma nova base para começar."
+                    />
+                  </div>
+                ) : (
+                  <KnowledgeBaseGrid
+                    bases={filteredBases}
+                    viewType={baseViewType}
+                    onDeleteBase={async (baseId) => {
+                      const result = await deleteBase(baseId);
+                      return { success: true, message: 'Base excluída com sucesso' };
+                    }}
+                    onAddBase={handleConfirmAddBase}
                   />
-                </div>
-              ) : (
-                <KnowledgeBaseGrid
-                  bases={bases}
-                  viewType={baseViewType}
-                  onDeleteBase={async (baseId) => {
-                    const result = await deleteBase(baseId);
-                    return { success: true, message: 'Base excluída com sucesso' };
-                  }}
-                  onAddBase={handleConfirmAddBase}
-                />
-              )}
+                )}
+              </div>
+            </div>
+
+            <div>
+              <TreinamentoHeader
+                viewType={viewType}
+                onViewTypeChange={handleViewTypeChange}
+                onAddClick={handleAddTraining}
+                isAddingTraining={isAddingTraining}
+              />
+              <div className="mt-4">
+                {filteredTrainings.length === 0 ? (
+                  <div className="mt-4">
+                    <EmptyState
+                      icon={FileText}
+                      title="Nenhum treinamento"
+                      description="Você ainda não possui nenhum treinamento. Adicione um novo conteúdo para começar."
+                    />
+                  </div>
+                ) : (
+                  <TreinamentoGrid
+                    trainings={filteredTrainings}
+                    viewType={viewType}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                    onOpenModal={handleOpenModal}
+                    onOpenDeleteModal={handleOpenDeleteModal}
+                    isDeletingTraining={isDeletingTraining}
+                  />
+                )}
+              </div>
             </div>
           </div>
 
-          <div>
-            <TreinamentoHeader
-              viewType={viewType}
-              onViewChange={handleViewTypeChange}
-              onAddClick={handleAddTraining}
-              isAddingTraining={isAddingTraining}
+          {isAddingBase && (
+            <ModalAddBase
+              isOpen={isAddingBase}
+              onClose={handleCloseAddBaseModal}
+              onConfirm={handleConfirmAddBase}
             />
-            <div className="mt-4">
-              {trainings.length === 0 ? (
-                <div className="mt-4">
-                  <EmptyState
-                    icon={FileText}
-                    title="Nenhum treinamento"
-                    description="Você ainda não possui nenhum treinamento. Adicione um novo conteúdo para começar."
-                  />
-                </div>
-              ) : (
-                <TreinamentoGrid
-                  trainings={trainings}
-                  viewType={viewType}
-                  currentPage={currentPage}
-                  onPageChange={setCurrentPage}
-                  onOpenModal={handleOpenModal}
-                  onOpenDeleteModal={handleOpenDeleteModal}
-                  isDeletingTraining={isDeletingTraining}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+          )}
 
-        {isAddingBase && (
-          <ModalAddBase
-            isOpen={isAddingBase}
-            onClose={handleCloseAddBaseModal}
-            onConfirm={handleConfirmAddBase}
+          {/* Modal de Gerenciar Treinamento */}
+          <TrainingModal
+            isOpen={isTrainingModalOpen}
+            onClose={handleCloseAddModal}
+            trainingId={selectedTraining?.uid}
+            currentPhase={selectedTraining?.fase}
           />
-        )}
 
-        {/* Modal de Gerenciar Treinamento */}
-        <TrainingModal
-          isOpen={isTrainingModalOpen}
-          onClose={handleCloseAddModal}
-          trainingId={selectedTraining?.uid}
-          currentPhase={selectedTraining?.fase}
-        />
-
-        {/* Modal de Excluir Treinamento */}
-        <ModalDeleteTreinamento
-          isOpen={isDeleteModalOpen}
-          onClose={handleCloseDeleteModal}
-          onConfirm={handleConfirmDelete}
-          trainingName={selectedTraining?.resumo || 'Sem descrição'}
-          trainingOrigin={selectedTraining?.origem || 'Não informada'}
-          trainingBase={selectedTraining?.base || 'Aguardando'}
-        />
+          {/* Modal de Excluir Treinamento */}
+          <ModalDeleteTreinamento
+            isOpen={isDeleteModalOpen}
+            onClose={handleCloseDeleteModal}
+            onConfirm={handleConfirmDelete}
+            trainingName={selectedTraining?.resumo || 'Sem descrição'}
+            trainingOrigin={selectedTraining?.origem || 'Não informada'}
+            trainingBase={selectedTraining?.base || 'Aguardando'}
+          />
+        </div>
       </div>
     </div>
   );

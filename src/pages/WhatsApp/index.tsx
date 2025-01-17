@@ -1,12 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { useBots, BotData } from '../../hooks/useBots';
 import { useKnowledgeBases } from '../../hooks/useKnowledgeBases';
+import { useProjetosSelect } from '../../hooks/useProjetosSelect';
 import { StatsCards } from './components/StatsCards';
 import AssistantesHeader from './components/AssistantesHeader';
 import AssistantGrid from './components/AssistantGrid';
 import useAuth from '../../stores/useAuth';
+import { useProject } from '../../contexts/ProjectContext';
 import SyncAssistantModal from '../../pages/Dashboard/components/SyncAssistantModal';
 import AssistantDetailsModal from '../../pages/Dashboard/components/AssistantDetailsModal';
+import WelcomeHeader from '../Dashboard/components/WelcomeHeader';
 
 const WhatsApp = () => {
   const [viewType, setViewType] = useState<'grid' | 'table'>(() => {
@@ -16,18 +19,27 @@ const WhatsApp = () => {
   const [syncModalOpen, setSyncModalOpen] = useState(false);
   const [selectedBot, setSelectedBot] = useState<BotData | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
-  const { userUid } = useAuth();
+  const { userUid, empresaUid } = useAuth();
   const { bots, loading, isSubscribed, addBot, updateBot, deleteBot } = useBots();
   const { bases } = useKnowledgeBases();
+  const { projetos, loading: loadingProjetos } = useProjetosSelect(empresaUid);
+  const { selectedProject } = useProject();
+
+  const filteredBots = useMemo(() => {
+    if (selectedProject === 'all') {
+      return bots;
+    }
+    return bots.filter(bot => bot.projeto === selectedProject);
+  }, [bots, selectedProject]);
 
   const stats = useMemo(() => {
     return {
-      total: bots.length,
-      online: bots.filter((bot) => bot.bot_status === 'open').length,
-      offline: bots.filter((bot) => bot.bot_status !== 'open').length,
-      active: bots.filter((bot) => bot.bot_ativo).length,
+      total: filteredBots.length,
+      online: filteredBots.filter((bot) => bot.bot_status === 'open').length,
+      offline: filteredBots.filter((bot) => bot.bot_status !== 'open').length,
+      active: filteredBots.filter((bot) => bot.bot_ativo).length,
     };
-  }, [bots]);
+  }, [filteredBots]);
 
   const handleAddAssistant = async (name: string) => {
     await addBot(name);
@@ -89,7 +101,16 @@ const WhatsApp = () => {
     localStorage.setItem('whatsappViewType', type);
   };
 
-  if (loading || !isSubscribed) {
+  const handleProjectChange = async (botUid: string, projectId: string) => {
+    try {
+      await updateBot(botUid, { projeto: projectId || null });
+      console.log('Projeto atualizado com sucesso');
+    } catch (error) {
+      console.error('Erro ao atualizar projeto:', error);
+    }
+  };
+
+  if (loading || !isSubscribed || loadingProjetos) {
     return (
       <div className="w-full px-4 pb-4 sm:pb-6">
         <div className="max-w-[1370px] mx-auto">
@@ -98,7 +119,7 @@ const WhatsApp = () => {
             style={{ backgroundColor: 'var(--bg-primary)' }}
           >
             <span style={{ color: 'var(--text-primary)' }}>
-              {loading ? 'Carregando...' : 'Conectando ao serviço de bots...'}
+              {loading || loadingProjetos ? 'Carregando...' : 'Conectando ao serviço de bots...'}
             </span>
           </div>
         </div>
@@ -107,58 +128,63 @@ const WhatsApp = () => {
   }
 
   return (
-    <div className="w-full px-4 pb-4 pt-4 sm:pb-6">
-      <div className="max-w-[1370px] mx-auto">
-        <div className="flex flex-col gap-6">
-          <StatsCards {...stats} />
-          <AssistantesHeader
-            viewType={viewType}
-            onViewChange={handleViewChange}
-            onAddAssistant={handleAddAssistant}
-          />
-          <div 
-            className={viewType === 'table' ? 'rounded-lg p-6' : ''}
-            style={{ 
-              backgroundColor: viewType === 'table' ? 'var(--bg-primary)' : 'transparent',
-              borderRadius: '0.75rem'
-            }}
-          >
-            <AssistantGrid
-              bots={bots}
-              bases={bases}
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--sidebar-active-bg)' }}>
+      <WelcomeHeader route="whatsapp" />
+      <div className="w-full px-4 pb-4 pt-4 sm:pb-6">
+        <div className="max-w-[1370px] mx-auto">
+          <div className="flex flex-col gap-6">
+            <StatsCards {...stats} />
+            <AssistantesHeader
               viewType={viewType}
-              onBaseChange={handleBaseChange}
-              onSync={handleSync}
-              onPause={handlePause}
-              onDelete={handleDelete}
-              onCustomize={handleCustomize}
+              onViewChange={handleViewChange}
+              onAddAssistant={handleAddAssistant}
             />
+            <div 
+              className={viewType === 'table' ? 'rounded-lg p-6' : ''}
+              style={{ 
+                backgroundColor: viewType === 'table' ? 'var(--bg-primary)' : 'transparent',
+                borderRadius: '0.75rem'
+              }}
+            >
+              <AssistantGrid
+                bots={filteredBots}
+                bases={bases}
+                projetos={projetos}
+                viewType={viewType}
+                onBaseChange={handleBaseChange}
+                onSync={handleSync}
+                onPause={handlePause}
+                onDelete={handleDelete}
+                onCustomize={handleCustomize}
+                onProjectChange={handleProjectChange}
+              />
+            </div>
           </div>
+
+          {selectedBot && (
+            <>
+              <SyncAssistantModal
+                isOpen={syncModalOpen}
+                onClose={() => {
+                  setSyncModalOpen(false);
+                  setSelectedBot(null);
+                }}
+                assistantName={selectedBot.bot_nome}
+                assistantImage={selectedBot.bot_perfil || null}
+                assistantId={selectedBot.uid}
+              />
+
+              <AssistantDetailsModal
+                isOpen={detailsModalOpen}
+                onClose={() => {
+                  setDetailsModalOpen(false);
+                  setSelectedBot(null);
+                }}
+                bot={selectedBot}
+              />
+            </>
+          )}
         </div>
-
-        {selectedBot && (
-          <>
-            <SyncAssistantModal
-              isOpen={syncModalOpen}
-              onClose={() => {
-                setSyncModalOpen(false);
-                setSelectedBot(null);
-              }}
-              assistantName={selectedBot.bot_nome}
-              assistantImage={selectedBot.bot_perfil || null}
-              assistantId={selectedBot.uid}
-            />
-
-            <AssistantDetailsModal
-              isOpen={detailsModalOpen}
-              onClose={() => {
-                setDetailsModalOpen(false);
-                setSelectedBot(null);
-              }}
-              bot={selectedBot}
-            />
-          </>
-        )}
       </div>
     </div>
   );

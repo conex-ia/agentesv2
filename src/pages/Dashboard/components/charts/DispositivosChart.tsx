@@ -1,105 +1,136 @@
-import React, { useMemo } from 'react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts';
+import React, { useEffect, useRef } from 'react';
+import { Bar } from 'react-chartjs-2';
 import { Conversa } from '../../../../hooks/useConversas';
 
 interface DispositivosChartProps {
   conversas: Conversa[];
 }
 
-interface DispositivoData {
-  nome: string;
-  quantidade: number;
-  percentual: string;
-}
-
 const DispositivosChart: React.FC<DispositivosChartProps> = ({ conversas }) => {
-  const data = useMemo(() => {
-    const contagem = conversas.reduce((acc: { [key: string]: number }, conversa) => {
-      const dispositivo = conversa.dispositivo || 'Desconhecido';
-      acc[dispositivo] = (acc[dispositivo] || 0) + 1;
-      return acc;
-    }, {});
+  const chartRef = useRef<any>(null);
 
-    const total = conversas.length;
+  useEffect(() => {
+    if (chartRef.current) {
+      const chart = chartRef.current;
+      const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim();
+      
+      // Atualiza as cores dos textos
+      chart.options.scales.x.ticks.color = textColor;
+      chart.options.scales.y.ticks.color = textColor;
+      chart.update();
+    }
+  }, []);
 
-    return Object.entries(contagem)
-      .map(([nome, quantidade]): DispositivoData => ({
-        nome,
-        quantidade,
-        percentual: `${((quantidade / total) * 100).toFixed(1)}%`
-      }))
-      .sort((a, b) => b.quantidade - a.quantidade);
-  }, [conversas]);
+  const contagem = {
+    'WhatsApp Web': 0,
+    'Android': 0,
+    'iOS': 0,
+    'Desconhecido': 0
+  };
 
-  if (data.length === 0) {
-    return (
-      <div 
-        className="h-64 flex items-center justify-center text-lg"
-        style={{ color: 'var(--text-secondary)' }}
-      >
-        Nenhum dado disponível
-      </div>
-    );
-  }
+  conversas.forEach(conversa => {
+    const device = conversa.dispositivo || 'Desconhecido';
+    if (device in contagem) {
+      contagem[device as keyof typeof contagem]++;
+    } else {
+      contagem.Desconhecido++;
+    }
+  });
+
+  const data = {
+    labels: Object.keys(contagem).map(key => `${key} (${contagem[key as keyof typeof contagem]})`),
+    datasets: [
+      {
+        data: Object.values(contagem),
+        backgroundColor: '#10b981',
+        borderRadius: 6,
+      }
+    ]
+  };
+
+  const options = {
+    indexAxis: 'y' as const,
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        enabled: true,
+        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        padding: 12,
+        displayColors: false,
+        callbacks: {
+          label: function(context: any) {
+            return `${context.parsed.x} mensagens`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+          drawBorder: false,
+          color: 'rgba(255, 255, 255, 0.05)'
+        },
+        ticks: {
+          font: {
+            size: 12
+          }
+        }
+      },
+      y: {
+        grid: {
+          display: false,
+          drawBorder: false
+        },
+        ticks: {
+          padding: 12,
+          font: {
+            size: 12
+          }
+        }
+      }
+    }
+  };
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart
-        data={data}
-        layout="vertical"
-        margin={{
-          top: 10,
-          right: 30,
-          left: 100,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid 
-          strokeDasharray="3 3" 
-          horizontal={false}
-          stroke="var(--border-color)"
-        />
-        <XAxis
-          type="number"
-          tick={{ fill: 'var(--text-secondary)' }}
-          tickLine={{ stroke: 'var(--border-color)' }}
-          axisLine={{ stroke: 'var(--border-color)' }}
-        />
-        <YAxis
-          type="category"
-          dataKey="nome"
-          tick={{ fill: 'var(--text-secondary)' }}
-          tickLine={{ stroke: 'var(--border-color)' }}
-          axisLine={{ stroke: 'var(--border-color)' }}
-        />
-        <Tooltip
-          contentStyle={{
-            backgroundColor: 'var(--bg-secondary)',
-            borderColor: 'var(--border-color)',
-            borderRadius: '8px'
-          }}
-          labelStyle={{ color: 'var(--text-primary)' }}
-          itemStyle={{ color: 'var(--text-secondary)' }}
-          formatter={(value: number, name: string, props: any) => [
-            `${value} (${props.payload.percentual})`,
-            'Mensagens'
-          ]}
-        />
-        <Bar
-          dataKey="quantidade"
-          fill="var(--accent-color)"
-          radius={[0, 4, 4, 0]}
-        />
-      </BarChart>
-    </ResponsiveContainer>
+    <div style={{ height: '300px', position: 'relative' }}>
+      <Bar 
+        ref={chartRef}
+        data={data} 
+        options={options} 
+        plugins={[{
+          id: 'datalabels',
+          afterDraw: (chart: any) => {
+            const { ctx, data } = chart;
+            const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim();
+            ctx.save();
+            
+            data.datasets[0].data.forEach((value: number, i: number) => {
+              const meta = chart.getDatasetMeta(0);
+              const bar = meta.data[i];
+              
+              ctx.fillStyle = textColor;
+              ctx.textAlign = 'left';
+              ctx.textBaseline = 'middle';
+              ctx.font = 'bold 12px sans-serif';
+              
+              const x = bar.x + 8;
+              const y = bar.y;
+              
+              ctx.fillText(value.toString(), x, y);
+            });
+            
+            ctx.restore();
+          }
+        }]} 
+      />
+    </div>
   );
 };
 

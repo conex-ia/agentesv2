@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import useAuth from '../stores/useAuth';
 import { supabase } from '../lib/supabase';
 import type { TrainingData } from '../types/training';
+import { useProjectNames } from './useProjectNames';
 
 export function useTrainingData() {
   const [trainings, setTrainings] = useState<TrainingData[]>([]);

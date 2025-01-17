@@ -67,7 +67,7 @@ export const ViewKnowledgeBaseModal: React.FC<ViewKnowledgeBaseModalProps> = ({
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <span className="text-sm text-gray-400">Nome</span>
-                  <p className="text-white text-lg">{base.nome}</p>
+                  <p className="text-white text-lg">{base.nome ? base.nome.split('_')[0] : '-'}</p>
                 </div>
                 <div>
                   <span className="text-sm text-gray-400">Projeto</span>

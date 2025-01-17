@@ -21,19 +21,11 @@ const StatsCard = ({ title, value, Icon }: StatsCardProps) => {
   
   return (
     <div 
-      className="rounded-lg p-6 hover:-translate-y-1"
+      className="stats-card rounded-lg p-6 transition-all duration-200 ease-in-out hover:-translate-y-1 cursor-pointer"
       style={{ 
         backgroundColor: 'var(--bg-primary)',
         border: '1px solid var(--border-color)',
-        boxShadow: 'var(--shadow-elevation-medium)',
-        transition: 'all 0.2s ease-in-out',
-        cursor: 'pointer'
-      }}
-      onMouseEnter={(e) => {
-        (e.target as HTMLDivElement).style.boxShadow = 'var(--shadow-elevation-high)';
-      }}
-      onMouseLeave={(e) => {
-        (e.target as HTMLDivElement).style.boxShadow = 'var(--shadow-elevation-medium)';
+        boxShadow: 'var(--shadow-elevation-medium)'
       }}
     >
       <div className="flex items-center justify-between">

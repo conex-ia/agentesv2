@@ -14,12 +14,14 @@ export interface BotData {
   bot_perfil?: string;
   bot_criado: string;
   bot_modificado: string | null;
+  projeto?: string | null;
 }
 
 interface UpdateBotData {
   base_id?: string;
   status?: 'connected' | 'disconnected';
   bot_base?: string | null;
+  projeto?: string | null;
 }
 
 const TABLE_NAME = 'conex-bots';
@@ -157,6 +159,10 @@ export const useBots = () => {
       
       if (data.status !== undefined) {
         updateData.bot_status = data.status === 'connected' ? 'open' : 'close';
+      }
+
+      if (data.projeto !== undefined) {
+        updateData.projeto = data.projeto;
       }
 
       const { error } = await supabase

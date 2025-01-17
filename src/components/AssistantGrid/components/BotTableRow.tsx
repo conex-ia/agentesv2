@@ -28,6 +28,11 @@ export const BotTableRow: React.FC<BotTableRowProps> = ({
     return fullName.split('.')[0].split('_')[0];
   };
 
+  const formatLabel = (label: string) => {
+    if (label === 'Vincule uma Base' || label === 'Desvincular Base') return label;
+    return label.split('_')[0];
+  };
+
   return (
     <tr className="border-b border-gray-700/50">
       <td className="py-4">
@@ -72,7 +77,7 @@ export const BotTableRow: React.FC<BotTableRowProps> = ({
         >
           {knowledgeBaseOptions.map((option) => (
             <option key={option.value} value={option.value}>
-              {option.label}
+              {formatLabel(option.label)}
             </option>
           ))}
         </select>

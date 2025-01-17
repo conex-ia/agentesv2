@@ -16,6 +16,13 @@ export interface ContagemPorOrigem {
   humano: number;
 }
 
+export interface ContagemPorDispositivo {
+  'WhatsApp Web': number;
+  'Android': number;
+  'iOS': number;
+  'Desconhecido': number;
+}
+
 const DISPOSITIVO_NORMALIZADO = {
   'android': 'Android',
   'whatsapp android': 'Android',
@@ -54,7 +61,7 @@ export const useConversas = () => {
       // Buscar apenas os últimos 30 dias de conversas
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
+      
       const { data: conversasData, error: conversasError } = await supabase
         .from('conex_conversas')
         .select('uid, created_at, dispositivo, origem')

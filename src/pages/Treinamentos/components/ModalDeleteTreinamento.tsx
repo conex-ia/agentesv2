@@ -43,6 +43,12 @@ const ModalDeleteTreinamento = ({
     onClose();
   };
 
+  // Função para formatar o nome da base
+  const formatBaseName = (nome: string) => {
+    if (!nome || nome === 'Aguardando') return nome;
+    return nome.split('_')[0];
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -94,7 +100,7 @@ const ModalDeleteTreinamento = ({
                     <div className="flex flex-col gap-2">
                       <div>
                         <span className="text-sm text-gray-400">Vinculado a base:</span>
-                        <p className="text-white">{trainingBase}</p>
+                        <p className="text-white">{formatBaseName(trainingBase)}</p>
                       </div>
                       <div>
                         <span className="text-sm text-gray-400">Origem:</span>

@@ -272,3 +272,26 @@
 .custom-toggle[data-active="true"]::after {
   transform: translateX(1.25rem);
 }
+
+/* Tema escuro - sombras */
+:root[data-theme="dark"] {
+  --shadow-elevation-low: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-elevation-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-elevation-high: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* Tema claro - sombras */
+:root[data-theme="light"] {
+  --shadow-elevation-low: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-elevation-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-elevation-high: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Componentes */
+.stats-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.stats-card:hover {
+  box-shadow: var(--shadow-elevation-high);
+}

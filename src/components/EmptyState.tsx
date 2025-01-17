@@ -8,7 +8,7 @@ type IconProps = {
 };
 
 interface EmptyStateProps {
-  icon: React.ComponentType<IconProps> | React.ReactNode;
+  icon: LucideIcon;
   title: string;
   description: string;
 }
@@ -31,14 +31,7 @@ export const EmptyState = ({ icon: Icon, title, description }: EmptyStateProps) 
             className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
             style={{ backgroundColor: 'var(--accent-color-transparent)' }}
           >
-            {React.isValidElement(Icon) ? (
-              Icon
-            ) : (
-              React.createElement(Icon as React.ComponentType<IconProps>, {
-                size: 32,
-                style: { color: 'var(--accent-color)' }
-              })
-            )}
+            <Icon size={32} style={{ color: 'var(--accent-color)' }} />
           </div>
           <h2 
             className="text-2xl font-bold mb-2"

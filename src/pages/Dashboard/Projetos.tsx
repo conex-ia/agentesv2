@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase';
 import ProjetosGrid from './components/ProjetosGrid';
 import AddProjetoModal from './components/AddProjetoModal';
 import ProjetosHeader from './components/ProjetosHeader';
+import WelcomeHeader from './components/WelcomeHeader';
 
 const Projetos = () => {
   const { empresaUid } = useAuth();
@@ -84,7 +85,8 @@ const Projetos = () => {
   }
 
   return (
-    <>
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--sidebar-active-bg)' }}>
+      <WelcomeHeader route="projetos" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -111,7 +113,7 @@ const Projetos = () => {
         onClose={() => setIsAddModalOpen(false)}
         onConfirm={handleAddProjeto}
       />
-    </>
+    </div>
   );
 };
 

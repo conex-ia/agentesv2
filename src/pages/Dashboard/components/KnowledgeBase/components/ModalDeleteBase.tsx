@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, CheckCircle2 } from 'lucide-react';
 import { KnowledgeBase } from '../../../../../hooks/useKnowledgeBases';
 import { Modal } from '../../../../../components/Modal';
+import { useProjetos } from '../../../../../hooks/useProjetos';
+import useAuth from '../../../../../stores/useAuth';
 
 interface ModalDeleteBaseProps {
   isOpen: boolean;
@@ -19,6 +21,16 @@ const ModalDeleteBase: React.FC<ModalDeleteBaseProps> = ({
 }) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { empresaUid } = useAuth();
+  const { projetos, loading: projetosLoading } = useProjetos(empresaUid);
+
+  // Criar um mapa de projetos para acesso rápido
+  const projetosMap = React.useMemo(() => {
+    return projetos.reduce((acc, projeto) => {
+      acc[projeto.uid] = projeto;
+      return acc;
+    }, {} as Record<string, typeof projetos[0]>);
+  }, [projetos]);
 
   const handleConfirm = async () => {
     if (!base) return;
@@ -42,6 +54,12 @@ const ModalDeleteBase: React.FC<ModalDeleteBaseProps> = ({
   };
 
   if (!base) return null;
+
+  // Função para formatar o nome da base
+  const formatBaseName = (nome: string | null) => {
+    if (!nome) return '-';
+    return nome.split('_')[0];
+  };
 
   return (
     <AnimatePresence>
@@ -94,7 +112,17 @@ const ModalDeleteBase: React.FC<ModalDeleteBaseProps> = ({
                     <div className="flex flex-col gap-2">
                       <div>
                         <span className="text-sm text-gray-400">Nome da Base</span>
-                        <p className="text-white">{base.nome}</p>
+                        <p className="text-white">{base.nome ? base.nome.split('_')[0] : '-'}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm text-gray-400">Projeto</span>
+                        <p className="text-white">
+                          {projetosLoading ? (
+                            <div className="animate-pulse bg-gray-700/50 h-5 w-32 rounded"></div>
+                          ) : (
+                            base.projeto ? projetosMap[base.projeto]?.nome || 'Projeto não encontrado' : '-'
+                          )}
+                        </p>
                       </div>
                       <div>
                         <span className="text-sm text-gray-400">Treinamentos</span>
@@ -103,15 +131,17 @@ const ModalDeleteBase: React.FC<ModalDeleteBaseProps> = ({
                       <div>
                         <span className="text-sm text-gray-400">Conteúdos</span>
                         {base.treinamentos && base.treinamentos.length > 0 ? (
-                          <div className="mt-2 space-y-2">
-                            {base.treinamentos.map((treinamento, index) => (
-                              <div 
-                                key={index}
-                                className="bg-gray-700/50 p-2 rounded-lg text-white text-sm"
-                              >
-                                {treinamento}
-                              </div>
-                            ))}
+                          <div className="mt-2 max-h-[8.5rem] overflow-y-auto custom-scrollbar pr-2">
+                            <div className="space-y-2">
+                              {base.treinamentos.map((treinamento, index) => (
+                                <div 
+                                  key={index}
+                                  className="bg-gray-700/50 p-2 rounded-lg text-white text-sm"
+                                >
+                                  {treinamento}
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         ) : (
                           <p className="text-white">Nenhum conteúdo adicionado</p>

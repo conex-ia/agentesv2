@@ -7,6 +7,7 @@ export interface TrainingData {
   created_at: string;
   updated_at: string;
   tipo?: string;
+  projeto?: string;
 }
 
 export interface TrainingProps {

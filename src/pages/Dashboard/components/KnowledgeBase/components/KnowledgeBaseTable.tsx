@@ -84,35 +84,32 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
             {bases.map((base) => (
               <tr 
                 key={base.uid} 
-                className="border-b"
+                className="border-b hover:bg-[var(--bg-hover)]"
                 style={{ borderColor: 'var(--border-color)' }}
               >
-                <td className="px-4 py-3">
+                <td className="p-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-700/50 flex items-center justify-center flex-shrink-0">
+                    <div 
+                      className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0"
+                      style={{ 
+                        backgroundColor: 'var(--status-success-bg)',
+                        border: '1px solid var(--status-success-color)30'
+                      }}
+                    >
                       <Database size={20} style={{ color: 'var(--status-success-color)' }} />
                     </div>
-                    <div>
-                      <div style={{ color: 'var(--text-primary)' }} className="font-medium">
-                        {base.nome.split('_')[0]}
-                      </div>
-                    </div>
+                    <span style={{ color: 'var(--text-secondary)' }}>
+                      {base.nome ? base.nome.split('_')[0] : '-'}
+                    </span>
                   </div>
                 </td>
-                <td className="p-4" style={{ color: 'var(--text-primary)' }}>
+                <td className="p-4" style={{ color: 'var(--text-secondary)' }}>
                   {formatDate(base.created_at)}
                 </td>
-                <td className="p-4" style={{ color: 'var(--text-primary)' }}>
-                  {projetosLoading ? (
-                    <div 
-                      className="animate-pulse h-6 w-32 rounded"
-                      style={{ backgroundColor: 'var(--bg-secondary)' }}
-                    />
-                  ) : (
-                    projetosMap[base.projeto]?.nome || '-'
-                  )}
+                <td className="p-4" style={{ color: 'var(--text-secondary)' }}>
+                  {base.projeto ? (projetosLoading ? '...' : projetosMap[base.projeto]?.nome || '-') : '-'}
                 </td>
-                <td className="p-4" style={{ color: 'var(--text-primary)' }}>
+                <td className="p-4" style={{ color: 'var(--text-secondary)' }}>
                   {base.treinamentos?.length || 0}
                 </td>
                 <td className="p-4">
@@ -124,13 +121,9 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                       <button 
                         type="button"
                         onClick={() => onOpenViewModal(base)}
-                        className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors"
+                        className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors hover:opacity-80"
                         style={{ 
-                          backgroundColor: 'var(--status-success-bg)',
-                          ':hover': { 
-                            backgroundColor: 'var(--status-success-bg)',
-                            opacity: '0.8'
-                          }
+                          backgroundColor: 'var(--status-success-bg)'
                         }}
                       >
                         <Eye size={24} style={{ color: 'var(--status-success-color)' }} />
@@ -144,13 +137,9 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                         type="button"
                         onClick={() => onOpenDeleteModal(base)}
                         disabled={isDeletingBase === base.uid}
-                        className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-80"
                         style={{ 
-                          backgroundColor: 'var(--status-error-bg)',
-                          ':hover': { 
-                            backgroundColor: 'var(--status-error-bg)',
-                            opacity: '0.8'
-                          }
+                          backgroundColor: 'var(--status-error-bg)'
                         }}
                       >
                         <Trash2 size={24} style={{ color: 'var(--status-error-color)' }} />

@@ -16,7 +16,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../../stores/useAuth';
 
-type ActiveScreen = 'dashboard' | 'training' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
+type ActiveScreen = 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -52,7 +52,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       if (screen === 'dashboard') navigate('/dashboard');
       else if (screen === 'whatsapp') navigate('/whatsapp');
       else if (screen === 'projetos') navigate('/projetos');
-      else if (screen === 'training') navigate('/training');
       else if (screen === 'treinamentos') navigate('/treinamentos');
     }
   };
@@ -68,13 +67,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       active: activeScreen === 'dashboard'
     },
     { 
-      icon: MessageCircle,
-      label: 'WhatsApp',
-      screen: 'whatsapp' as ActiveScreen,
-      path: '/whatsapp',
-      active: activeScreen === 'whatsapp'
-    },
-    { 
       icon: FolderOpen, 
       label: 'Projetos', 
       screen: 'projetos' as ActiveScreen,
@@ -82,11 +74,11 @@ const Sidebar: React.FC<SidebarProps> = ({
       active: activeScreen === 'projetos'
     },
     { 
-      icon: GraduationCap, 
-      label: 'Treinamento', 
-      screen: 'training' as ActiveScreen,
-      path: '/training',
-      active: activeScreen === 'training'
+      icon: MessageCircle,
+      label: 'WhatsApp',
+      screen: 'whatsapp' as ActiveScreen,
+      path: '/whatsapp',
+      active: activeScreen === 'whatsapp'
     },
     { 
       icon: GraduationCap, 
@@ -94,8 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       screen: 'treinamentos' as ActiveScreen,
       path: '/treinamentos',
       active: activeScreen === 'treinamentos'
-    },
-    { icon: BarChart2, label: 'Estatísticas', screen: null, active: false }
+    }
   ];
 
   return (

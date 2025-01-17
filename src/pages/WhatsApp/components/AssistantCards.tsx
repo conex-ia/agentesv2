@@ -1,25 +1,30 @@
 import { BotData } from '../../../hooks/useBots';
 import { KnowledgeBase } from '../../../hooks/useKnowledgeBases';
+import { ProjetoOption } from '../../../hooks/useProjetosSelect';
 import { RefreshCw, Play, Pause, Wifi, QrCode, Trash2, Bot } from 'lucide-react';
 
 interface AssistantCardsProps {
   bots: BotData[];
   bases: KnowledgeBase[];
+  projetos: ProjetoOption[];
   onBaseChange: (botUid: string, baseUid: string) => void;
   onSync: (bot: BotData) => void;
   onPause: (bot: BotData) => void;
   onDelete: (bot: BotData) => void;
   onCustomize: (bot: BotData) => void;
+  onProjectChange: (botUid: string, projectId: string) => void;
 }
 
 const AssistantCards = ({
   bots,
   bases,
+  projetos,
   onBaseChange,
   onSync,
   onPause,
   onDelete,
   onCustomize,
+  onProjectChange,
 }: AssistantCardsProps) => {
   const handleToggleActive = (bot: BotData) => {
     onPause(bot);
@@ -76,6 +81,28 @@ const AssistantCards = ({
           </div>
 
           <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <span className="font-medium" style={{ color: 'var(--text-primary)' }}>Projeto</span>
+              <select
+                className="w-full px-3 py-2 rounded-lg text-sm transition-shadow focus:outline-none focus:ring-2"
+                style={{
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-color)',
+                  color: 'var(--text-primary)',
+                  boxShadow: 'var(--shadow-elevation-low)'
+                }}
+                value={bot.projeto || ""}
+                onChange={(e) => onProjectChange(bot.uid, e.target.value)}
+              >
+                <option value="">Selecione um projeto</option>
+                {projetos.map((projeto) => (
+                  <option key={projeto.uid} value={projeto.uid}>
+                    {projeto.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="flex items-center justify-between">
               <span className="font-medium" style={{ color: 'var(--text-primary)' }}>Status da Conexão</span>
               {bot.bot_status === 'open' ? (

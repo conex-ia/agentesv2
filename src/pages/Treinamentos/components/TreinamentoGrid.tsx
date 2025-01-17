@@ -80,4 +80,12 @@ const TreinamentoGrid: React.FC<TreinamentoGridProps> = ({
   );
 };
 
-export default TreinamentoGrid;
+// Adicionando memo com comparação customizada para evitar re-renderizações desnecessárias
+export default React.memo(TreinamentoGrid, (prevProps, nextProps) => {
+  return (
+    prevProps.trainings === nextProps.trainings &&
+    prevProps.viewType === nextProps.viewType &&
+    prevProps.currentPage === nextProps.currentPage &&
+    prevProps.isDeletingTraining === nextProps.isDeletingTraining
+  );
+});

@@ -7,14 +7,14 @@ import useAuth from '../../../stores/useAuth';
 interface MobileMenuProps {
   userName: string;
   userProfile?: string | null;
-  activeScreen: 'dashboard' | 'training' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
-  setActiveScreen: (screen: 'dashboard' | 'training' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp') => void;
+  activeScreen: 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
+  setActiveScreen: (screen: 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp') => void;
 }
 
-type ActiveScreen = 'dashboard' | 'training' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
+type ActiveScreen = 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
 
 function isValidScreen(screen: string): screen is ActiveScreen {
-  return ['dashboard', 'training', 'treinamentos', 'assistants', 'projetos', 'knowledge-bases', 'whatsapp'].includes(screen);
+  return ['dashboard', 'treinamentos', 'assistants', 'projetos', 'knowledge-bases', 'whatsapp'].includes(screen);
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({
@@ -37,11 +37,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', screen: 'dashboard' },
-    { icon: MessageCircle, label: 'WhatsApp', screen: 'whatsapp' },
     { icon: FolderOpen, label: 'Projetos', screen: 'projetos' },
-    { icon: GraduationCap, label: 'Treinamento', screen: 'training' },
-    { icon: GraduationCap, label: 'Treinamentos', screen: 'treinamentos' },
-    { icon: BarChart2, label: 'Estatísticas', screen: null },
+    { icon: MessageCircle, label: 'WhatsApp', screen: 'whatsapp' },
+    { icon: GraduationCap, label: 'Treinamentos', screen: 'treinamentos' }
   ] as const;
 
   return (
@@ -75,7 +73,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                           if (item.screen === 'dashboard') navigate('/dashboard');
                           else if (item.screen === 'whatsapp') navigate('/whatsapp');
                           else if (item.screen === 'projetos') navigate('/projetos');
-                          else if (item.screen === 'training') navigate('/training');
                           else if (item.screen === 'treinamentos') navigate('/treinamentos');
                         }
                       }}
