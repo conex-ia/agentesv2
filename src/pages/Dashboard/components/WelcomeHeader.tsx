@@ -10,7 +10,7 @@ interface UserData {
   user_nome?: string;
 }
 
-type RouteType = 'dashboard' | 'projetos' | 'whatsapp' | 'treinamentos';
+type RouteType = 'dashboard' | 'projetos' | 'whatsapp' | 'treinamentos' | 'laboratorio';
 
 interface WelcomeHeaderProps {
   route?: RouteType;
@@ -24,6 +24,8 @@ const getWelcomeMessage = (route: RouteType) => {
       return 'ao WhatsApp';
     case 'treinamentos':
       return 'aos seus Treinamentos';
+    case 'laboratorio':
+      return 'ao Laboratório';
     default:
       return 'ao seu Dashboard';
   }

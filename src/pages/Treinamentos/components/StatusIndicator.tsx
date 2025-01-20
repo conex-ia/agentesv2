@@ -2,76 +2,67 @@ import React from 'react';
 import { Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface StatusIndicatorProps {
-  status: string;
+  status: string | null;
 }
 
 export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status }) => {
-  const isError = status.includes('erro');
-  const isFinished = status === 'finalizado';
-
-  if (isError) {
+  // Status Finalizado
+  if (status === 'finalizado') {
     return (
       <div className="flex flex-col items-center">
         <div 
           className="w-12 h-12 rounded-lg flex items-center justify-center"
-          style={{ 
-            backgroundColor: 'var(--status-error-bg)',
-            boxShadow: '0 4px 14px 0 var(--accent-color-transparent)'
-          }}
-        >
-          <AlertCircle 
-            size={24} 
-            className="transition-colors"
-            style={{ color: 'var(--status-error-color)' }} 
-          />
-        </div>
-        <span className="text-xs mt-1" style={{ color: 'var(--status-error-color)' }}>
-          Erro
-        </span>
-      </div>
-    );
-  }
-
-  if (isFinished) {
-    return (
-      <div className="flex flex-col items-center">
-        <div 
-          className="w-12 h-12 rounded-lg flex items-center justify-center"
-          style={{ 
-            backgroundColor: 'var(--status-success-bg)',
-            boxShadow: '0 4px 14px 0 var(--accent-color-transparent)'
-          }}
+          style={{ backgroundColor: '#10b98130' }} // verde transparente
         >
           <CheckCircle2 
             size={24} 
             className="transition-colors"
-            style={{ color: 'var(--status-success-color)' }} 
+            style={{ color: '#10b981' }} // verde
           />
         </div>
-        <span className="text-xs mt-1" style={{ color: 'var(--status-success-color)' }}>
+        <span className="text-xs mt-1" style={{ color: '#10b981' }}>
           Finalizado
         </span>
       </div>
     );
   }
 
+  // Status Erro
+  if (status?.includes('erro')) {
+    return (
+      <div className="flex flex-col items-center">
+        <div 
+          className="w-12 h-12 rounded-lg flex items-center justify-center"
+          style={{ backgroundColor: '#ef444425' }} // vermelho transparente
+        >
+          <AlertCircle 
+            size={24} 
+            className="transition-colors"
+            style={{ color: '#ef4444' }} // vermelho
+          />
+        </div>
+        <span className="text-xs mt-1" style={{ color: '#ef4444' }}>
+          Erro
+        </span>
+      </div>
+    );
+  }
+
+  // Status Aguardando (default para qualquer outro valor)
   return (
     <div className="flex flex-col items-center">
       <div 
         className="w-12 h-12 rounded-lg flex items-center justify-center"
-        style={{ 
-          backgroundColor: 'var(--status-warning-bg)',
-          boxShadow: '0 4px 14px 0 var(--accent-color-transparent)'
-        }}
+        style={{ backgroundColor: '#fbbf2420' }} // amarelo transparente
       >
         <Clock 
           size={24} 
           className="transition-colors"
-          style={{ color: 'var(--status-warning-color)' }} 
+          style={{ color: '#fbbf24' }} // amarelo
         />
       </div>
-      <span className="text-xs mt-1" style={{ color: 'var(--status-warning-color)' }}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+      <span className="text-xs mt-1" style={{ color: '#fbbf24' }}>
+        Aguardando
       </span>
     </div>
   );

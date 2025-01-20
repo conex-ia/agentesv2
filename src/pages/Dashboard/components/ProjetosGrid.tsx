@@ -80,15 +80,12 @@ const ProjetosGrid = ({
     
     try {
       const { error } = await supabase
-        .from('conex-projetos_t')
-        .delete()
+        .from('conex_projetos')
+        .update({ ativo: false })
         .eq('uid', deleteModal.projeto.uid);
 
       if (error) throw error;
 
-      // Atualizar a lista de projetos após deletar
-      const updatedProjetos = projetos.filter(p => p.uid !== deleteModal.projeto?.uid);
-      onPageChange(currentPage, updatedProjetos);
       handleCloseDeleteModal();
     } catch (error) {
       console.error('Erro ao deletar projeto:', error);

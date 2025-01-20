@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Projeto } from './components/ProjetosGrid';
 import { motion } from 'framer-motion';
 import { useProjetos } from '../../hooks/useProjetos';
@@ -11,13 +11,27 @@ import WelcomeHeader from './components/WelcomeHeader';
 
 const Projetos = () => {
   const { empresaUid } = useAuth();
-  const { projetos, loading } = useProjetos(empresaUid);
+  const { projetos, loading, isSubscribed } = useProjetos(empresaUid);
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [viewType, setViewType] = useState<'grid' | 'table'>(() => {
     const savedViewType = localStorage.getItem('projetosViewType');
     return (savedViewType as 'grid' | 'table') || 'grid';
   });
+
+  // Usar useMemo para forçar re-render quando os projetos mudam
+  const projetosAtivos = useMemo(() => {
+    console.log('Recalculando projetos ativos:', projetos.length);
+    return projetos;
+  }, [projetos]);
+
+  // Reset página quando a lista de projetos muda
+  useEffect(() => {
+    const totalPages = Math.ceil(projetosAtivos.length / 6); // 6 é o ITEMS_PER_PAGE do grid
+    if (currentPage > totalPages) {
+      setCurrentPage(Math.max(1, totalPages));
+    }
+  }, [projetosAtivos.length, currentPage]);
 
   useEffect(() => {
     localStorage.setItem('projetosViewType', viewType);
@@ -32,7 +46,7 @@ const Projetos = () => {
     }
 
     // Verificar se já existe um projeto com o mesmo nome
-    const projetoExistente = projetos?.find(
+    const projetoExistente = projetosAtivos?.find(
       projeto => projeto.nome.toLowerCase() === nome.toLowerCase()
     );
 
@@ -42,7 +56,8 @@ const Projetos = () => {
 
     const projetoData = {
       empresa: empresaUid,
-      nome
+      nome,
+      ativo: true
     };
 
     console.log('Enviando dados do projeto:', projetoData);
@@ -59,9 +74,10 @@ const Projetos = () => {
       }
 
       console.log('Projeto adicionado com sucesso:', data);
+      setIsAddModalOpen(false);
     } catch (error) {
       console.error('Erro completo:', error);
-      throw error; // Propaga o erro para ser tratado no modal
+      throw error;
     }
   };
 
@@ -100,7 +116,7 @@ const Projetos = () => {
           />
           
           <ProjetosGrid
-            projetos={projetos}
+            projetos={projetosAtivos}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
             viewType={viewType}

@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 
 const TABLE_NAME = 'conex_projetos';
 
-export interface Projeto {
+export interface ProjetoGlobal {
   uid: string;
   nome: string;
   empresa: string;
@@ -12,8 +12,8 @@ export interface Projeto {
   created_at: string;
 }
 
-export const useProjetos = (empresaUid: string | null) => {
-  const [projetos, setProjetos] = useState<Projeto[]>([]);
+export const useProjetosGlobal = (empresaUid: string | null) => {
+  const [projetos, setProjetos] = useState<ProjetoGlobal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -25,7 +25,7 @@ export const useProjetos = (empresaUid: string | null) => {
     }
 
     try {
-      console.log('Buscando projetos para empresa:', empresaUid);
+      console.log('Buscando projetos globais para empresa:', empresaUid);
       
       const { data, error } = await supabase
         .from(TABLE_NAME)
@@ -34,11 +34,11 @@ export const useProjetos = (empresaUid: string | null) => {
         .eq('ativo', true);
 
       if (error) {
-        console.error('Erro ao buscar projetos:', error);
+        console.error('Erro ao buscar projetos globais:', error);
         throw error;
       }
 
-      console.log('Projetos encontrados:', {
+      console.log('Projetos globais encontrados:', {
         total: data?.length || 0,
         empresaUid,
         projetos: data
@@ -46,7 +46,7 @@ export const useProjetos = (empresaUid: string | null) => {
       
       setProjetos(data || []);
     } catch (err) {
-      console.error('Erro ao buscar projetos:', err);
+      console.error('Erro ao buscar projetos globais:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
@@ -55,15 +55,15 @@ export const useProjetos = (empresaUid: string | null) => {
 
   useEffect(() => {
     if (!empresaUid) {
-      console.log('Sem empresaUid disponível, pulando subscription');
+      console.log('Sem empresaUid disponível, pulando subscription global');
       return;
     }
 
-    // Gera um timestamp único para o canal
+    // Gera um timestamp único para o canal global
     const timestamp = Date.now();
-    const channelName = `projetos-changes-${empresaUid}-${timestamp}`;
+    const channelName = `projetos-global-changes-${empresaUid}-${timestamp}`;
     
-    console.log('Configurando subscription de projetos:', {
+    console.log('Configurando subscription global de projetos:', {
       empresa: empresaUid,
       canal: channelName
     });
@@ -80,7 +80,7 @@ export const useProjetos = (empresaUid: string | null) => {
           filter: `empresa=eq.${empresaUid}`
         },
         (payload) => {
-          console.log('Mudança em projetos recebida:', {
+          console.log('Mudança em projetos globais recebida:', {
             canal: channelName,
             evento: payload.eventType,
             novo: payload.new,
@@ -91,7 +91,7 @@ export const useProjetos = (empresaUid: string | null) => {
         }
       )
       .subscribe((status) => {
-        console.log('Status da subscription:', {
+        console.log('Status da subscription global:', {
           canal: channelName,
           status
         });
@@ -102,7 +102,7 @@ export const useProjetos = (empresaUid: string | null) => {
       });
 
     return () => {
-      console.log('Limpando subscription:', {
+      console.log('Limpando subscription global:', {
         canal: channelName,
         empresa: empresaUid
       });

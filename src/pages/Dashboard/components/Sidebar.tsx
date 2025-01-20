@@ -11,12 +11,13 @@ import {
   LayoutDashboard,
   Building,
   FolderOpen,
-  MessageCircle
+  MessageCircle,
+  Beaker
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../../stores/useAuth';
 
-type ActiveScreen = 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
+type ActiveScreen = 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp' | 'laboratorio';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -53,6 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       else if (screen === 'whatsapp') navigate('/whatsapp');
       else if (screen === 'projetos') navigate('/projetos');
       else if (screen === 'treinamentos') navigate('/treinamentos');
+      else if (screen === 'laboratorio') navigate('/laboratorio');
     }
   };
 
@@ -86,6 +88,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       screen: 'treinamentos' as ActiveScreen,
       path: '/treinamentos',
       active: activeScreen === 'treinamentos'
+    },
+    {
+      icon: Beaker,
+      label: 'Laboratório',
+      screen: 'laboratorio' as ActiveScreen,
+      path: '/laboratorio',
+      active: activeScreen === 'laboratorio'
     }
   ];
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Database, Eye, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -16,16 +16,42 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
   onView,
   onDelete,
 }) => {
-  // Extrair todos os IDs de projetos únicos
-  const projectIds = [...new Set(bases.map(base => base.projeto))];
+  // Estado local para controlar loading e dados renderizados
+  const [isLoading, setIsLoading] = useState(true);
+  const [renderedBases, setRenderedBases] = useState<KnowledgeBase[]>([]);
+
+  // Extrair todos os IDs de projetos únicos com useMemo
+  const projectIds = useMemo(() => 
+    [...new Set(bases.map(base => base.projeto).filter((id): id is string => id !== null))],
+    [bases]
+  );
+
   const { projectNames, loading: loadingProjects } = useProjectNames(projectIds);
+
+  // Efeito para atualizar os dados renderizados com delay
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setRenderedBases(bases);
+      setIsLoading(false);
+    }, 100); // Pequeno delay para garantir que o DOM esteja pronto
+
+    return () => clearTimeout(timer);
+  }, [bases]);
 
   const formatDate = (date: string) => {
     return format(new Date(date), "dd/MM/yyyy, HH:mm", { locale: ptBR });
   };
 
+  // Gera uma key única baseada nos dados
+  const tableKey = useMemo(() => {
+    const baseIds = bases.map(base => base.uid).join('-');
+    const projectNameKeys = Object.keys(projectNames).sort().join('-');
+    return `${baseIds}-${projectNameKeys}`;
+  }, [bases, projectNames]);
+
   return (
-    <div className="w-full">
+    <div className="w-full" key={tableKey}>
       <table className="w-full">
         <thead>
           <tr className="border-b border-gray-700">
@@ -37,8 +63,8 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
             <th className="text-right py-4 px-4 font-medium text-[var(--text-primary)]">Gestão</th>
           </tr>
         </thead>
-        <tbody>
-          {bases.map((base) => (
+        <tbody style={{ opacity: isLoading ? '0.5' : '1', transition: 'opacity 0.2s ease-in-out' }}>
+          {renderedBases.map((base) => (
             <tr key={base.uid} className="border-b border-gray-700/50 hover:bg-[var(--bg-secondary)]">
               <td className="py-4 px-4">
                 <div className="flex items-center gap-3">
@@ -74,19 +100,31 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                 )}
               </td>
               <td className="py-4 px-4">
-                <div className="flex items-center justify-end gap-2">
-                  <button
-                    onClick={() => onView?.(base)}
-                    className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-primary)] rounded-lg transition-colors"
-                  >
-                    <Eye className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => onDelete?.(base)}
-                    className="p-2 text-[var(--text-secondary)] hover:text-red-500 hover:bg-[var(--bg-primary)] rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+                <div className="flex items-center justify-end gap-4">
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={() => onView?.(base)}
+                      className="p-2 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: 'rgba(0, 209, 157, 0.1)' }}
+                    >
+                      <Eye className="w-5 h-5" style={{ color: '#00D19D' }} />
+                    </button>
+                    <span className="text-xs mt-1" style={{ color: '#00D19D' }}>
+                      ver
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={() => onDelete?.(base)}
+                      className="p-2 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: 'rgba(255, 71, 87, 0.1)' }}
+                    >
+                      <Trash2 className="w-5 h-5" style={{ color: '#FF4757' }} />
+                    </button>
+                    <span className="text-xs mt-1" style={{ color: '#FF4757' }}>
+                      excluir
+                    </span>
+                  </div>
                 </div>
               </td>
             </tr>

@@ -16,32 +16,33 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   isDeletingTraining
 }) => {
   return (
-    <div className="flex justify-end gap-2">
+    <div className="flex justify-end gap-4">
       {training.fase !== 'finalizado' && (
-        <button
-          onClick={() => onOpenModal(training.uid, training.fase)}
-          className="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:shadow-lg"
-          style={{ 
-            backgroundColor: 'rgba(0, 209, 157, 0.1)',
-            color: '#00D19D',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-          }}
-        >
-          <Upload size={20} />
-        </button>
+        <div className="flex flex-col items-center">
+          <div
+            className="w-12 h-12 rounded-lg flex items-center justify-center"
+            onClick={() => onOpenModal(training.uid, training.fase)}
+            style={{ backgroundColor: 'rgba(0, 209, 157, 0.1)' }}
+          >
+            <Upload size={24} style={{ color: '#00D19D' }} />
+          </div>
+          <span className="text-xs mt-1" style={{ color: '#00D19D' }}>
+            Upload
+          </span>
+        </div>
       )}
-      <button
-        onClick={() => onOpenDeleteModal(training)}
-        className="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:shadow-lg"
-        disabled={isDeletingTraining === training.uid}
-        style={{ 
-          backgroundColor: 'rgba(255, 71, 87, 0.1)',
-          color: '#FF4757',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-        }}
-      >
-        <Trash2 size={20} />
-      </button>
+      <div className="flex flex-col items-center">
+        <div
+          className="w-12 h-12 rounded-lg flex items-center justify-center"
+          onClick={() => onOpenDeleteModal(training)}
+          style={{ backgroundColor: 'rgba(255, 71, 87, 0.1)' }}
+        >
+          <Trash2 size={24} style={{ color: '#FF4757' }} />
+        </div>
+        <span className="text-xs mt-1" style={{ color: '#FF4757' }}>
+          Excluir
+        </span>
+      </div>
     </div>
   );
 };

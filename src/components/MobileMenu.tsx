@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, GraduationCap, Bot, BarChart2, LogOut, ArrowUpRight } from 'lucide-react';
+import { LayoutDashboard, GraduationCap, Bot, BarChart2, LogOut, ArrowUpRight, Beaker } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../stores/useAuth';
 
@@ -8,7 +8,7 @@ interface MobileMenuProps {
   userName: string;
   userProfile?: string;
   activeScreen: string;
-  setActiveScreen: (screen: 'dashboard' | 'training' | 'personalizar' | 'projetos' | 'knowledge-bases' | 'whatsapp') => void;
+  setActiveScreen: (screen: 'dashboard' | 'training' | 'personalizar' | 'projetos' | 'knowledge-bases' | 'whatsapp' | 'laboratorio') => void;
 }
 
 const MobileMenu = ({ userName, userProfile, activeScreen, setActiveScreen }: MobileMenuProps) => {
@@ -20,7 +20,7 @@ const MobileMenu = ({ userName, userProfile, activeScreen, setActiveScreen }: Mo
     navigate('/');
   };
 
-  const handleScreenChange = (screen: 'dashboard' | 'training') => {
+  const handleScreenChange = (screen: 'dashboard' | 'training' | 'laboratorio') => {
     setActiveScreen(screen);
   };
 
@@ -38,6 +38,7 @@ const MobileMenu = ({ userName, userProfile, activeScreen, setActiveScreen }: Mo
       active: activeScreen === 'training'
     },
     { icon: Bot, label: 'Assistentes', screen: null, active: false },
+    { icon: Beaker, label: 'Laboratório', screen: 'laboratorio' as const, active: activeScreen === 'laboratorio' },
     { icon: BarChart2, label: 'Estatísticas', screen: null, active: false },
   ];
 

@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useProjetosGlobal } from '../hooks/useProjetosGlobal';
+import useAuth from '../stores/useAuth';
 
 interface ProjectContextType {
   selectedProject: string;
@@ -10,6 +12,8 @@ const STORAGE_KEY = 'dashboardSelectedProject';
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { empresaUid } = useAuth();
+  const { projetos } = useProjetosGlobal(empresaUid);
   const [selectedProject, setSelectedProject] = useState<string>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -20,6 +24,17 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return 'all';
     }
   });
+
+  // Validar se o projeto selecionado ainda existe
+  useEffect(() => {
+    if (selectedProject !== 'all' && projetos.length > 0) {
+      const projetoExiste = projetos.some(p => p.uid === selectedProject);
+      if (!projetoExiste) {
+        console.log('Projeto selecionado não existe mais, resetando para "all"');
+        handleSetSelectedProject('all');
+      }
+    }
+  }, [projetos, selectedProject]);
 
   useEffect(() => {
     console.log('Estado atual do selectedProject:', selectedProject);
@@ -53,4 +68,4 @@ export const useProject = () => {
     throw new Error('useProject must be used within a ProjectProvider');
   }
   return context;
-}; 
+};
