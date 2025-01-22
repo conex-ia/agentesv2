@@ -2,8 +2,6 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useTrainingData } from '../../hooks/useTrainingData';
 import { useKnowledgeBases } from '../../hooks/useKnowledgeBases';
 import { ViewType } from './types';
-import { KnowledgeBaseGrid } from '../Dashboard/components/KnowledgeBase/KnowledgeBaseGrid';
-import { ModalAddBase } from '../Dashboard/components/KnowledgeBase/components/ModalAddBase';
 import { TreinamentoHeader } from './components/TreinamentoHeader';
 import TreinamentoGrid from './components/TreinamentoGrid';
 import useAuth from '../../stores/useAuth';
@@ -11,16 +9,22 @@ import TrainingModal from './components/TrainingModal';
 import ModalDeleteTreinamento from './components/ModalDeleteTreinamento';
 import { TrainingData } from './types/training';
 import { KnowledgeBaseHeader } from './components/KnowledgeBaseHeader';
+import KnowledgeBaseTable from './components/KnowledgeBaseTable';
+import ModalAddBase from './components/ModalAddBase';
+import ModalViewBase from './components/ModalViewBase';
+import ModalDeleteBase from './components/ModalDeleteBase';
 import { EmptyState } from '../../components/EmptyState';
 import { Database, FileText } from 'lucide-react';
-import WelcomeHeader from '../Dashboard/components/WelcomeHeader';
+import WelcomeHeader from '../../components/WelcomeHeader';
 import { useProject } from '../../contexts/ProjectContext';
+import { useProjetosSelect } from '../../hooks/useProjetosSelect';
 
 const Treinamentos = () => {
   const { trainings, loading: trainingsLoading } = useTrainingData();
   const { bases, loading: basesLoading, error, deleteBase, addBase } = useKnowledgeBases();
   const { userUid, empresaUid } = useAuth();
   const { selectedProject } = useProject();
+  const { projetos, loading: loadingProjetos } = useProjetosSelect(empresaUid);
   const [isAddingBase, setIsAddingBase] = useState(false);
   const [isAddingTraining, setIsAddingTraining] = useState(false);
   const [viewType, setViewType] = useState<ViewType>(() => {
@@ -36,8 +40,16 @@ const Treinamentos = () => {
   const [selectedTraining, setSelectedTraining] = useState<TrainingData | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isTrainingModalOpen, setIsTrainingModalOpen] = useState(false);
+  const [viewModal, setViewModal] = useState<{ isOpen: boolean; base: any | null }>({
+    isOpen: false,
+    base: null
+  });
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; base: any | null }>({
+    isOpen: false,
+    base: null
+  });
 
-  const loading = trainingsLoading || basesLoading;
+  const loading = trainingsLoading || basesLoading || loadingProjetos;
 
   // Filtro dos dados baseado no projeto selecionado
   const filteredTrainings = useMemo(() => {
@@ -169,6 +181,27 @@ const Treinamentos = () => {
     localStorage.setItem('basesViewType', type);
   };
 
+  const handleOpenViewModal = (base: any) => {
+    setViewModal({ isOpen: true, base });
+  };
+
+  const handleCloseViewModal = () => {
+    setViewModal({ isOpen: false, base: null });
+  };
+
+  const handleOpenDeleteModalBase = (base: any) => {
+    setDeleteModal({ isOpen: true, base });
+  };
+
+  const handleCloseDeleteModalBase = () => {
+    setDeleteModal({ isOpen: false, base: null });
+  };
+
+  const handleDeleteBase = async () => {
+    if (!deleteModal.base) return { success: false, message: 'Base não encontrada' };
+    return await deleteBase(deleteModal.base.uid);
+  };
+
   if (loading) {
     return <div className="p-4 text-red-500">Carregando...</div>;
   }
@@ -199,13 +232,11 @@ const Treinamentos = () => {
                     />
                   </div>
                 ) : (
-                  <KnowledgeBaseGrid
+                  <KnowledgeBaseTable
                     bases={filteredBases}
                     viewType={baseViewType}
-                    onDeleteBase={async (baseId) => {
-                      const result = await deleteBase(baseId);
-                      return { success: true, message: 'Base excluída com sucesso' };
-                    }}
+                    onView={handleOpenViewModal}
+                    onDeleteBase={handleOpenDeleteModalBase}
                     onAddBase={handleConfirmAddBase}
                   />
                 )}
@@ -250,6 +281,19 @@ const Treinamentos = () => {
               onConfirm={handleConfirmAddBase}
             />
           )}
+
+          <ModalViewBase
+            isOpen={viewModal.isOpen}
+            onClose={handleCloseViewModal}
+            base={viewModal.base}
+          />
+
+          <ModalDeleteBase
+            isOpen={deleteModal.isOpen}
+            onClose={handleCloseDeleteModalBase}
+            onConfirm={handleDeleteBase}
+            base={deleteModal.base}
+          />
 
           {/* Modal de Gerenciar Treinamento */}
           <TrainingModal

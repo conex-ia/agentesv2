@@ -91,19 +91,18 @@ const TreinamentoCard: React.FC<TreinamentoCardProps> = ({
 
         <div>
           <span style={{ color: 'var(--text-secondary)' }} className="text-sm">Status</span>
-          <div className="mt-2 flex justify-center">
+          <div className="mt-2 flex items-center justify-between">
             <StatusIndicator status={training.fase} />
+            <div className="flex items-center gap-2">
+              <ActionButtons
+                training={training}
+                onOpenModal={onOpenModal}
+                onOpenDeleteModal={onOpenDeleteModal}
+                isDeletingTraining={isDeletingTraining}
+              />
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className="pt-4 flex justify-end gap-4">
-        <ActionButtons
-          training={training}
-          onOpenModal={onOpenModal}
-          onOpenDeleteModal={onOpenDeleteModal}
-          isDeletingTraining={isDeletingTraining}
-        />
       </div>
     </div>
   );

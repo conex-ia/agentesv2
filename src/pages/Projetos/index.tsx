@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Projeto } from './components/ProjetosGrid';
 import { motion } from 'framer-motion';
 import { useProjetos } from '../../hooks/useProjetos';
 import useAuth from '../../stores/useAuth';
@@ -8,6 +7,8 @@ import ProjetosGrid from './components/ProjetosGrid';
 import AddProjetoModal from './components/AddProjetoModal';
 import ProjetosHeader from './components/ProjetosHeader';
 import WelcomeHeader from '../../components/WelcomeHeader';
+import { Projeto } from './components/ProjetosGrid';
+import Pagination from '../../components/Pagination';
 
 const Projetos = () => {
   const { empresaUid } = useAuth();
@@ -86,9 +87,9 @@ const Projetos = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full px-4 pb-4 sm:pb-6"
+        className="w-full"
       >
-        <div className="max-w-[1370px] mx-auto">
+        <div className="max-w-[1370px] mx-auto px-6">
           <div 
             className="rounded-lg p-8 shadow-lg"
             style={{ backgroundColor: 'var(--bg-primary)' }}
@@ -103,31 +104,47 @@ const Projetos = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--sidebar-active-bg)' }}>
       <WelcomeHeader route="projetos" />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full px-4 pb-4 pt-4 sm:pb-6"
-      >
-        <div className="max-w-[1370px] mx-auto space-y-6">
-          <ProjetosHeader 
-            onAddProjeto={() => setIsAddModalOpen(true)} 
-            viewType={viewType}
-            onViewTypeChange={setViewType}
-          />
-          
-          <ProjetosGrid
-            projetos={projetosAtivos}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-            viewType={viewType}
-          />
+      
+      <div className="w-full px-6 pb-6">
+        <div className="max-w-[1370px] mx-auto">
+          {/* Container do Header de Projetos */}
+          <div 
+            className="rounded-lg p-6 mb-6"
+            style={{ backgroundColor: 'var(--sidebar-bg)' }}
+          >
+            <ProjetosHeader
+              viewType={viewType}
+              setViewType={setViewType}
+              onAddClick={() => setIsAddModalOpen(true)}
+            />
+          </div>
+
+          {/* Container do Grid de Projetos */}
+          <div className="space-y-6">
+            <div className="rounded-lg">
+              <ProjetosGrid
+                projetos={projetosAtivos.slice((currentPage - 1) * 6, currentPage * 6)}
+                viewType={viewType}
+              />
+            </div>
+
+            {projetosAtivos.length > 6 && (
+              <div className="p-4">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(projetosAtivos.length / 6)}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
+          </div>
         </div>
-      </motion.div>
+      </div>
 
       <AddProjetoModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onConfirm={handleAddProjeto}
+        onAdd={handleAddProjeto}
       />
     </div>
   );

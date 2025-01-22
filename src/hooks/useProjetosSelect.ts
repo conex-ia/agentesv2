@@ -22,40 +22,27 @@ export const useProjetosSelect = (empresaUid: string | null) => {
           .from('conex_projetos')
           .select('uid, nome')
           .eq('empresa', empresaUid)
-          .eq('ativo', true);
+          .eq('ativo', true)
+          .order('nome');
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching projetos:', error);
+          return;
+        }
 
         setProjetos(data || []);
-      } catch (err) {
-        console.error('Erro ao carregar projetos:', err);
+      } catch (error) {
+        console.error('Error fetching projetos:', error);
       } finally {
         setLoading(false);
       }
     };
 
+    setLoading(true);
     fetchProjetos();
-
-    const subscription = supabase
-      .channel('public:conex_projetos')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'conex_projetos',
-          filter: `empresa=eq.${empresaUid}`
-        },
-        () => {
-          fetchProjetos();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, [empresaUid]);
 
   return { projetos, loading };
-}; 
+};
+
+export default useProjetosSelect;

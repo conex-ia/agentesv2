@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
 import Dashboard from './pages/Dashboard';
 import WhatsApp from './pages/WhatsApp';
-import Projetos from './pages/Dashboard/Projetos';
+import Projetos from './pages/Projetos';
 import Treinamentos from './pages/Treinamentos';
 import Laboratorio from './pages/Laboratorio';
 import Landing from './pages/Landing';

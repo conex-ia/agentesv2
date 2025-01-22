@@ -3,7 +3,8 @@ import { useConversas } from '../../hooks/useConversas';
 import VolumeChart from './components/charts/VolumeChart';
 import DispositivosChart from './components/charts/DispositivosChart';
 import OrigemChart from './components/charts/OrigemChart';
-import WelcomeHeader from './components/WelcomeHeader';
+import WelcomeHeader from '../../components/WelcomeHeader';
+import { useProject } from '../../contexts/ProjectContext';
 
 const ChartContainer: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--sidebar-bg)' }}>
@@ -21,7 +22,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--sidebar-active-bg)' }}>
-      <WelcomeHeader />
+      <WelcomeHeader route="dashboard" />
       
       <div className="w-full px-6 pb-6">
         <div className="max-w-[1370px] mx-auto">

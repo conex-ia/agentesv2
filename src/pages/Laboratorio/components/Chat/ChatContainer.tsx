@@ -80,9 +80,10 @@ const ChatContainer: React.FC = () => {
     }
   };
 
+  // Formata o nome da base removendo o ID
   const formatBaseName = (name?: string) => {
     if (!name) return '';
-    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    return name.split('_')[0];
   };
 
   const getWelcomeMessage = () => {
@@ -126,12 +127,7 @@ const ChatContainer: React.FC = () => {
             {loadingBases ? "Carregando bases..." : (
               !selectedKnowledgeBase || selectedKnowledgeBase === 'all' || !bases
                 ? "Escolha uma base para interagir"
-                : <>
-                    Você está interagindo com a Base de Conhecimento:{' '}
-                    <span className="font-bold">
-                      {formatBaseName(bases.find(b => b.uid === selectedKnowledgeBase)?.nome)}
-                    </span>
-                  </>
+                : <>{getSelectedBaseName()}</>
             )}
           </p>
         </div>

@@ -15,6 +15,7 @@ interface Bot {
   bot_agente_nome: string;
   saudacao?: string;
   bot_base?: string;
+  prompt?: string;
 }
 
 interface AssistantDetailsModalProps {
@@ -31,7 +32,7 @@ const AssistantDetailsModal: React.FC<AssistantDetailsModalProps> = ({
   const [agentName, setAgentName] = useState(bot?.bot_agente_nome || '');
   const [lgpdEnabled, setLgpdEnabled] = useState(bot?.lgpd || false);
   const [greeting, setGreeting] = useState(bot?.saudacao || '');
-  const [isActive, setIsActive] = useState(bot?.bot_ativo || false);
+  const [prompt, setPrompt] = useState(bot?.prompt || '');
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<{
     type: 'success' | 'error' | null;
@@ -46,7 +47,7 @@ const AssistantDetailsModal: React.FC<AssistantDetailsModalProps> = ({
       setAgentName(bot.bot_agente_nome || '');
       setLgpdEnabled(bot.lgpd || false);
       setGreeting(bot.saudacao || '');
-      setIsActive(bot.bot_ativo || false);
+      setPrompt(bot.prompt || '');
     }
   }, [bot]);
 
@@ -77,6 +78,10 @@ const AssistantDetailsModal: React.FC<AssistantDetailsModalProps> = ({
     setGreeting(e.target.value);
   };
 
+  const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPrompt(e.target.value);
+  };
+
   const handleLgpdToggle = () => {
     setLgpdEnabled(!lgpdEnabled);
   };
@@ -99,7 +104,7 @@ const AssistantDetailsModal: React.FC<AssistantDetailsModalProps> = ({
           bot_agente_nome: agentName,
           lgpd: lgpdEnabled,
           saudacao: greeting,
-          bot_ativo: isActive
+          prompt: prompt
         })
         .eq('uid', bot.uid);
 
@@ -116,39 +121,6 @@ const AssistantDetailsModal: React.FC<AssistantDetailsModalProps> = ({
       });
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const handleActiveToggle = async () => {
-    // Se não tem base vinculada ou é "Escolha uma base", não permite ativar
-    if (!bot.bot_base || bot.bot_base === 'Escolha uma base') {
-      setSaveStatus({
-        type: 'error',
-        message: 'Não é possível ativar um assistente sem base de conhecimento vinculada'
-      });
-      return;
-    }
-
-    try {
-      const newStatus = !isActive;
-      const { error } = await supabase
-        .from('conex-bots')
-        .update({ bot_ativo: newStatus })
-        .eq('uid', bot.uid)
-        .select();
-
-      if (error) throw error;
-
-      setIsActive(newStatus);
-      setSaveStatus({
-        type: 'success',
-        message: `Assistente ${newStatus ? 'ativado' : 'desativado'} com sucesso`
-      });
-    } catch (error) {
-      setSaveStatus({
-        type: 'error',
-        message: 'Erro ao alterar status do assistente'
-      });
     }
   };
 
@@ -215,28 +187,6 @@ const AssistantDetailsModal: React.FC<AssistantDetailsModalProps> = ({
                       />
                     </div>
 
-                    {/* Toggle de Status */}
-                    <div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={isActive}
-                          onChange={handleActiveToggle}
-                          disabled={!bot.bot_base || bot.bot_base === 'Escolha uma base'}
-                          className="sr-only peer"
-                        />
-                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500"></div>
-                        <span className="ml-3 text-sm font-medium text-white">
-                          Assistente {isActive ? 'Ativo' : 'Inativo'}
-                        </span>
-                      </label>
-                      {(!bot.bot_base || bot.bot_base === 'Escolha uma base') && (
-                        <p className="mt-1 text-sm text-gray-400">
-                          (Vincule uma base de conhecimento primeiro)
-                        </p>
-                      )}
-                    </div>
-
                     {/* Toggle LGPD */}
                     <div>
                       <label className="relative inline-flex items-center cursor-pointer">
@@ -261,37 +211,77 @@ const AssistantDetailsModal: React.FC<AssistantDetailsModalProps> = ({
                       <textarea
                         value={greeting}
                         onChange={handleGreetingChange}
-                        rows={4}
+                        rows={2}
                         className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
                         placeholder="Adicione uma saudação personalizada. Se deixar em branco a saudação será gerada pela IA."
+                      />
+                    </div>
+
+                    {/* Prompt */}
+                    <div>
+                      <label className="block text-sm font-medium text-white mb-2">
+                        Prompt
+                      </label>
+                      <textarea
+                        value={prompt}
+                        onChange={handlePromptChange}
+                        rows={2}
+                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                        placeholder="Adicione um prompt personalizado..."
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 p-6 border-t border-gray-700">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleClose}
-                  className="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
-                >
-                  Fechar
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className={`px-4 py-2 text-sm font-medium text-white ${
-                    isSaving 
-                      ? 'bg-emerald-600 cursor-not-allowed' 
-                      : 'bg-emerald-500 hover:bg-emerald-600'
-                  } rounded-lg transition-colors`}
-                >
-                  {isSaving ? 'Salvando...' : 'Salvar Alterações'}
-                </motion.button>
+              <div className="relative flex items-center justify-end p-6 border-t border-gray-700">
+                {/* Status Message */}
+                <AnimatePresence>
+                  {saveStatus.type && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className={`absolute left-6 flex items-center gap-2 ${
+                        saveStatus.type === 'success' ? 'text-emerald-500' : 'text-red-500'
+                      }`}
+                    >
+                      {saveStatus.type === 'success' ? (
+                        <CheckCircle size={16} />
+                      ) : (
+                        <AlertCircle size={16} />
+                      )}
+                      {saveStatus.message}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="flex gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleClose}
+                    className="px-4 py-2 text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+                  >
+                    Fechar
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="px-4 py-2 text-sm font-medium bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {isSaving ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        Salvando...
+                      </>
+                    ) : (
+                      'Salvar'
+                    )}
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           </div>

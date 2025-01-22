@@ -11,16 +11,13 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status }) => {
     return (
       <div className="flex flex-col items-center">
         <div 
-          className="w-12 h-12 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: '#10b98130' }} // verde transparente
+          className="p-2 rounded-lg shadow-lg flex items-center justify-center bg-[#10b98130]"
         >
           <CheckCircle2 
-            size={24} 
-            className="transition-colors"
-            style={{ color: '#10b981' }} // verde
+            className="w-5 h-5 text-[#10b981]"
           />
         </div>
-        <span className="text-xs mt-1" style={{ color: '#10b981' }}>
+        <span className="text-xs mt-1 text-[#10b981]">
           Finalizado
         </span>
       </div>
@@ -32,16 +29,13 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status }) => {
     return (
       <div className="flex flex-col items-center">
         <div 
-          className="w-12 h-12 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: '#ef444425' }} // vermelho transparente
+          className="p-2 rounded-lg shadow-lg flex items-center justify-center bg-[#ef444425]"
         >
           <AlertCircle 
-            size={24} 
-            className="transition-colors"
-            style={{ color: '#ef4444' }} // vermelho
+            className="w-5 h-5 text-[#ef4444]"
           />
         </div>
-        <span className="text-xs mt-1" style={{ color: '#ef4444' }}>
+        <span className="text-xs mt-1 text-[#ef4444]">
           Erro
         </span>
       </div>
@@ -52,16 +46,13 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status }) => {
   return (
     <div className="flex flex-col items-center">
       <div 
-        className="w-12 h-12 rounded-lg flex items-center justify-center"
-        style={{ backgroundColor: '#fbbf2420' }} // amarelo transparente
+        className="p-2 rounded-lg shadow-lg flex items-center justify-center bg-[#fbbf2430]"
       >
         <Clock 
-          size={24} 
-          className="transition-colors"
-          style={{ color: '#fbbf24' }} // amarelo
+          className="w-5 h-5 text-[#fbbf24]"
         />
       </div>
-      <span className="text-xs mt-1" style={{ color: '#fbbf24' }}>
+      <span className="text-xs mt-1 text-[#fbbf24]">
         Aguardando
       </span>
     </div>

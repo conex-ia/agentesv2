@@ -20,11 +20,11 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
       {training.fase !== 'finalizado' && (
         <div className="flex flex-col items-center">
           <div
-            className="w-12 h-12 rounded-lg flex items-center justify-center"
+            className="p-2 rounded-lg shadow-lg flex items-center justify-center cursor-pointer"
             onClick={() => onOpenModal(training.uid, training.fase)}
             style={{ backgroundColor: 'rgba(0, 209, 157, 0.1)' }}
           >
-            <Upload size={24} style={{ color: '#00D19D' }} />
+            <Upload className="w-5 h-5" style={{ color: '#00D19D' }} />
           </div>
           <span className="text-xs mt-1" style={{ color: '#00D19D' }}>
             Upload
@@ -33,11 +33,11 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
       )}
       <div className="flex flex-col items-center">
         <div
-          className="w-12 h-12 rounded-lg flex items-center justify-center"
+          className="p-2 rounded-lg shadow-lg flex items-center justify-center cursor-pointer"
           onClick={() => onOpenDeleteModal(training)}
           style={{ backgroundColor: 'rgba(255, 71, 87, 0.1)' }}
         >
-          <Trash2 size={24} style={{ color: '#FF4757' }} />
+          <Trash2 className="w-5 h-5" style={{ color: '#FF4757' }} />
         </div>
         <span className="text-xs mt-1" style={{ color: '#FF4757' }}>
           Excluir

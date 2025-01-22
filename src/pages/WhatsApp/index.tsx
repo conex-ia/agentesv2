@@ -9,7 +9,7 @@ import useAuth from '../../stores/useAuth';
 import { useProject } from '../../contexts/ProjectContext';
 import SyncAssistantModal from '../../pages/Dashboard/components/SyncAssistantModal';
 import AssistantDetailsModal from '../../pages/Dashboard/components/AssistantDetailsModal';
-import WelcomeHeader from '../Dashboard/components/WelcomeHeader';
+import WelcomeHeader from '../../components/WelcomeHeader';
 
 const WhatsApp = () => {
   const [viewType, setViewType] = useState<'grid' | 'table'>(() => {
