@@ -13,6 +13,7 @@ export interface KnowledgeBase {
   id: number | null;             // bigint null default nextval('conex_bases_t_id_seq'::regclass)
   treinamentosuid: string[] | null; // uuid[] null
   projeto: string | null;        // uuid null
+  prompt: string | null;         // text null
 }
 
 export const useKnowledgeBases = () => {
@@ -144,6 +145,35 @@ export const useKnowledgeBases = () => {
     }
   };
 
+  const updateBasePrompt = async (baseUid: string, prompt: string) => {
+    try {
+      console.log('[useKnowledgeBases] Atualizando prompt da base:', baseUid);
+      
+      const { data, error } = await supabase
+        .from('conex-bases_t')
+        .update({ prompt })
+        .eq('uid', baseUid)
+        .select();
+
+      if (error) {
+        console.error('[useKnowledgeBases] Erro ao atualizar prompt:', error);
+        throw error;
+      }
+
+      // Atualiza o estado local
+      setBases(prevBases => 
+        prevBases.map(base => 
+          base.uid === baseUid ? { ...base, prompt } : base
+        )
+      );
+
+      return { success: true, data };
+    } catch (err) {
+      console.error('[useKnowledgeBases] Erro ao atualizar prompt:', err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     if (!empresaUid) {
       setLoading(false);
@@ -198,6 +228,7 @@ export const useKnowledgeBases = () => {
     error,
     isDeletingBase,
     deleteBase,
-    addBase 
+    addBase,
+    updateBasePrompt
   };
 };

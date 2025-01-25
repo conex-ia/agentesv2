@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Database, Eye, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Database, Eye, Trash2, ChevronLeft, ChevronRight, Bot } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { KnowledgeBase } from '../../../hooks/useKnowledgeBases';
@@ -14,6 +14,7 @@ interface KnowledgeBaseTableProps {
   onView?: (base: KnowledgeBase) => void;
   onDeleteBase?: (base: KnowledgeBase) => void;
   onAddBase?: (name: string, projectId: string) => Promise<string>;
+  onPersonalizar?: (base: KnowledgeBase) => void;
 }
 
 const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
@@ -22,6 +23,7 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
   onView,
   onDeleteBase,
   onAddBase,
+  onPersonalizar,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [renderedBases, setRenderedBases] = useState<KnowledgeBase[]>([]);
@@ -211,7 +213,7 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
             <th className="text-left py-4 px-4 font-medium" style={{ color: 'var(--text-secondary)' }}>Projeto</th>
             <th className="text-left py-4 px-4 font-medium" style={{ color: 'var(--text-secondary)' }}>Treinamentos</th>
             <th className="text-left py-4 px-4 font-medium" style={{ color: 'var(--text-secondary)' }}>Conteúdos</th>
-            <th className="text-right py-4 px-4 font-medium" style={{ color: 'var(--text-secondary)' }}>Gestão</th>
+            <th className="text-center py-4 px-4 font-medium" style={{ color: 'var(--text-secondary)', width: '280px' }}>Gestão</th>
           </tr>
         </thead>
         <tbody style={{ opacity: isLoading ? '0.5' : '1', transition: 'opacity 0.2s ease-in-out' }}>
@@ -265,7 +267,7 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                 )}
               </td>
               <td className="px-4 py-4">
-                <div className="flex items-center justify-end gap-4">
+                <div className="flex items-center justify-center gap-4">
                   <div className="flex flex-col items-center">
                     <button
                       onClick={() => onView?.(base)}
@@ -276,6 +278,18 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                     </button>
                     <span className="mt-1 text-xs" style={{ color: '#00D19D' }}>
                       ver
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={() => onPersonalizar?.(base)}
+                      className="flex items-center justify-center rounded-lg p-2"
+                      style={{ backgroundColor: 'rgba(0, 209, 157, 0.1)' }}
+                    >
+                      <Bot className="h-5 w-5" style={{ color: '#00D19D' }} />
+                    </button>
+                    <span className="mt-1 text-xs" style={{ color: '#00D19D' }}>
+                      personalizar
                     </span>
                   </div>
                   <div className="flex flex-col items-center">

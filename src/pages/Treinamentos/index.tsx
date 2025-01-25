@@ -13,6 +13,7 @@ import KnowledgeBaseTable from './components/KnowledgeBaseTable';
 import ModalAddBase from './components/ModalAddBase';
 import ModalViewBase from './components/ModalViewBase';
 import ModalDeleteBase from './components/ModalDeleteBase';
+import ModalPersonalizarBase from './components/ModalPersonalizarBase';
 import { EmptyState } from '../../components/EmptyState';
 import { Database, FileText } from 'lucide-react';
 import WelcomeHeader from '../../components/WelcomeHeader';
@@ -21,7 +22,7 @@ import { useProjetosSelect } from '../../hooks/useProjetosSelect';
 
 const Treinamentos = () => {
   const { trainings, loading: trainingsLoading } = useTrainingData();
-  const { bases, loading: basesLoading, error, deleteBase, addBase } = useKnowledgeBases();
+  const { bases, loading: basesLoading, error, deleteBase, addBase, updateBasePrompt } = useKnowledgeBases();
   const { userUid, empresaUid } = useAuth();
   const { selectedProject } = useProject();
   const { projetos, loading: loadingProjetos } = useProjetosSelect(empresaUid);
@@ -42,11 +43,15 @@ const Treinamentos = () => {
   const [isTrainingModalOpen, setIsTrainingModalOpen] = useState(false);
   const [viewModal, setViewModal] = useState<{ isOpen: boolean; base: any | null }>({
     isOpen: false,
-    base: null
+    base: null,
+  });
+  const [personalizarModal, setPersonalizarModal] = useState<{ isOpen: boolean; base: any | null }>({
+    isOpen: false,
+    base: null,
   });
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; base: any | null }>({
     isOpen: false,
-    base: null
+    base: null,
   });
 
   const loading = trainingsLoading || basesLoading || loadingProjetos;
@@ -202,6 +207,14 @@ const Treinamentos = () => {
     return await deleteBase(deleteModal.base.uid);
   };
 
+  const handlePersonalizar = async (base: KnowledgeBase, prompt: string) => {
+    try {
+      await updateBasePrompt(base.uid, prompt);
+    } catch (error) {
+      console.error('Erro ao atualizar prompt:', error);
+    }
+  };
+
   if (loading) {
     return <div className="p-4 text-red-500">Carregando...</div>;
   }
@@ -235,9 +248,9 @@ const Treinamentos = () => {
                   <KnowledgeBaseTable
                     bases={filteredBases}
                     viewType={baseViewType}
-                    onView={handleOpenViewModal}
-                    onDeleteBase={handleOpenDeleteModalBase}
-                    onAddBase={handleConfirmAddBase}
+                    onView={(base) => setViewModal({ isOpen: true, base })}
+                    onDeleteBase={(base) => setDeleteModal({ isOpen: true, base })}
+                    onPersonalizar={(base) => setPersonalizarModal({ isOpen: true, base })}
                   />
                 )}
               </div>
@@ -284,8 +297,15 @@ const Treinamentos = () => {
 
           <ModalViewBase
             isOpen={viewModal.isOpen}
-            onClose={handleCloseViewModal}
+            onClose={() => setViewModal({ isOpen: false, base: null })}
             base={viewModal.base}
+          />
+
+          <ModalPersonalizarBase
+            isOpen={personalizarModal.isOpen}
+            onClose={() => setPersonalizarModal({ isOpen: false, base: null })}
+            base={personalizarModal.base}
+            onConfirm={handlePersonalizar}
           />
 
           <ModalDeleteBase

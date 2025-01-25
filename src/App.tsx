@@ -11,6 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { ProjectProvider } from './contexts/ProjectContext';
 import { KnowledgeBaseProvider } from './contexts/KnowledgeBaseContext';
 import './config/chartConfig';
+import Produtos from './pages/Produtos';
 
 const App: React.FC = () => {
   return (
@@ -26,11 +27,12 @@ const App: React.FC = () => {
             <Route path="/whatsapp" element={<WhatsApp />} />
             <Route path="/projetos" element={<Projetos />} />
             <Route path="/treinamentos" element={<Treinamentos />} />
+            <Route path="/produtos" element={<Produtos />} />
             <Route path="/laboratorio" element={<Laboratorio />} />
           </Route>
 
-          {/* Rota de fallback - Redireciona rotas não encontradas para a landing */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Redireciona qualquer rota não encontrada para o dashboard */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </KnowledgeBaseProvider>
     </ProjectProvider>

@@ -1,20 +1,20 @@
 import React from 'react';
 import { Menu } from '@headlessui/react';
-import { LayoutDashboard, Bot, GraduationCap, BarChart2, LogOut, FolderOpen, MessageCircle } from 'lucide-react';
+import { LayoutDashboard, Bot, GraduationCap, BarChart2, LogOut, FolderOpen, MessageCircle, Package2, Beaker } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../../stores/useAuth';
 
 interface MobileMenuProps {
   userName: string;
   userProfile?: string | null;
-  activeScreen: 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
-  setActiveScreen: (screen: 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp') => void;
+  activeScreen: 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp' | 'laboratorio' | 'produtos';
+  setActiveScreen: (screen: 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp' | 'laboratorio' | 'produtos') => void;
 }
 
-type ActiveScreen = 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp';
+type ActiveScreen = 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp' | 'laboratorio' | 'produtos';
 
 function isValidScreen(screen: string): screen is ActiveScreen {
-  return ['dashboard', 'treinamentos', 'assistants', 'projetos', 'knowledge-bases', 'whatsapp'].includes(screen);
+  return ['dashboard', 'treinamentos', 'assistants', 'projetos', 'knowledge-bases', 'whatsapp', 'laboratorio', 'produtos'].includes(screen);
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({
@@ -35,11 +35,23 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
     }, 100);
   };
 
+  const handleScreenChange = (screen: 'dashboard' | 'treinamentos' | 'projetos' | 'whatsapp' | 'laboratorio' | 'produtos') => {
+    setActiveScreen(screen);
+    if (screen === 'dashboard') navigate('/dashboard');
+    else if (screen === 'whatsapp') navigate('/whatsapp');
+    else if (screen === 'projetos') navigate('/projetos');
+    else if (screen === 'treinamentos') navigate('/treinamentos');
+    else if (screen === 'produtos') navigate('/produtos');
+    else if (screen === 'laboratorio') navigate('/laboratorio');
+  };
+
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', screen: 'dashboard' },
     { icon: FolderOpen, label: 'Projetos', screen: 'projetos' },
     { icon: MessageCircle, label: 'WhatsApp', screen: 'whatsapp' },
-    { icon: GraduationCap, label: 'Treinamentos', screen: 'treinamentos' }
+    { icon: GraduationCap, label: 'Treinamentos', screen: 'treinamentos' },
+    { icon: Package2, label: 'Produtos', screen: 'produtos' },
+    { icon: Beaker, label: 'Laboratório', screen: 'laboratorio' }
   ] as const;
 
   return (
@@ -69,11 +81,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                     <button
                       onClick={() => {
                         if (item.screen && isValidScreen(item.screen)) {
-                          setActiveScreen(item.screen);
-                          if (item.screen === 'dashboard') navigate('/dashboard');
-                          else if (item.screen === 'whatsapp') navigate('/whatsapp');
-                          else if (item.screen === 'projetos') navigate('/projetos');
-                          else if (item.screen === 'treinamentos') navigate('/treinamentos');
+                          handleScreenChange(item.screen);
                         }
                       }}
                       className={`flex items-center gap-3 px-3 py-2 rounded-lg w-full transition-colors

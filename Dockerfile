@@ -13,23 +13,6 @@ RUN npm ci
 # Copiar código fonte
 COPY . .
 
-# Configurar variáveis de ambiente para o build
-ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_KEY
-ARG VITE_MINIATURA
-ARG VITE_URLINFO
-ARG VITE_TITULO
-ARG VITE_FAVICON
-ARG VITE_DESCRICAO
-
-ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
-ENV VITE_SUPABASE_KEY=${VITE_SUPABASE_KEY}
-ENV VITE_MINIATURA=${VITE_MINIATURA}
-ENV VITE_URLINFO=${VITE_URLINFO}
-ENV VITE_TITULO=${VITE_TITULO}
-ENV VITE_FAVICON=${VITE_FAVICON}
-ENV VITE_DESCRICAO=${VITE_DESCRICAO}
-
 # Build do projeto
 RUN npm run build
 
@@ -38,6 +21,9 @@ FROM nginx:alpine
 
 # Adicionar usuário não-root
 RUN adduser -D -u 1000 appuser
+
+# Instalar envsubst
+RUN apk add --no-cache gettext
 
 # Configuração do nginx otimizada para SPA
 RUN echo 'server { \
@@ -67,6 +53,38 @@ RUN echo 'server { \
 # Copiar arquivos buildados
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+# Criar template para variáveis de ambiente
+RUN echo 'export const env = { \
+    supabaseUrl: "${VITE_SUPABASE_URL}", \
+    supabaseKey: "${VITE_SUPABASE_KEY}", \
+    MINIATURA: "${VITE_MINIATURA}", \
+    URLINFO: "${VITE_URLINFO}", \
+    TITULO: "${VITE_TITULO}", \
+    FAVICON: "${VITE_FAVICON}", \
+    DESCRICAO: "${VITE_DESCRICAO}" \
+};' > /usr/share/nginx/html/env-config.js.template
+
+# Script de inicialização
+RUN printf '#!/bin/sh\n\
+# Substituir variáveis no template\n\
+cat > /usr/share/nginx/html/env-config.js << EOF\n\
+window.env = {\n\
+  supabaseUrl: "${VITE_SUPABASE_URL}",\n\
+  supabaseKey: "${VITE_SUPABASE_KEY}",\n\
+  MINIATURA: "${VITE_MINIATURA}",\n\
+  URLINFO: "${VITE_URLINFO}",\n\
+  TITULO: "${VITE_TITULO}",\n\
+  FAVICON: "${VITE_FAVICON}",\n\
+  DESCRICAO: "${VITE_DESCRICAO}"\n\
+};\n\
+EOF\n\
+\n\
+echo "Conteúdo de env-config.js:"\n\
+cat /usr/share/nginx/html/env-config.js\n\
+\n\
+nginx -g "daemon off;"\n' > /docker-entrypoint.sh && \
+    chmod +x /docker-entrypoint.sh
+
 # Ajustar permissões
 RUN chown -R appuser:appuser /usr/share/nginx/html && \
     chmod -R 755 /usr/share/nginx/html && \
@@ -74,10 +92,11 @@ RUN chown -R appuser:appuser /usr/share/nginx/html && \
     chown -R appuser:appuser /var/log/nginx && \
     chown -R appuser:appuser /etc/nginx/conf.d && \
     touch /var/run/nginx.pid && \
-    chown -R appuser:appuser /var/run/nginx.pid
+    chown -R appuser:appuser /var/run/nginx.pid && \
+    chown appuser:appuser /docker-entrypoint.sh
 
 USER appuser
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/docker-entrypoint.sh"]
