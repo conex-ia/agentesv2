@@ -13,12 +13,13 @@ import {
   FolderOpen,
   MessageCircle,
   Beaker,
-  Package2
+  Package2,
+  Database
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../../stores/useAuth';
 
-type ActiveScreen = 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp' | 'laboratorio' | 'produtos';
+type ActiveScreen = 'dashboard' | 'treinamentos' | 'assistants' | 'projetos' | 'knowledge-bases' | 'whatsapp' | 'laboratorio' | 'produtos' | 'bases';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -57,6 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       else if (screen === 'treinamentos') navigate('/treinamentos');
       else if (screen === 'produtos') navigate('/produtos');
       else if (screen === 'laboratorio') navigate('/laboratorio');
+      else if (screen === 'bases') navigate('/bases');
     }
   };
 
@@ -83,6 +85,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       screen: 'whatsapp' as ActiveScreen,
       path: '/whatsapp',
       active: activeScreen === 'whatsapp'
+    },
+    {
+      icon: Database,
+      label: 'Bases',
+      screen: 'bases' as ActiveScreen,
+      path: '/bases',
+      active: activeScreen === 'bases'
     },
     { 
       icon: GraduationCap, 

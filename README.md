@@ -1,18 +1,61 @@
-# ConexIA
+# ConexIA - Frontend
 
-## Environment Setup
+Frontend da aplicação ConexIA, desenvolvida para automatizar a gestão de condomínios com inteligência artificial.
 
-1. Copy `.env.example` to `.env`:
+## Requisitos
+
+- Node.js 20+
+- Docker e Docker Compose para deploy
+
+## Configuração
+
+1. Clone o repositório
+2. Copie `.env.example` para `.env` e configure as variáveis
+3. Instale as dependências:
 ```bash
-cp .env.example .env
+npm install
 ```
 
-2. Update the `.env` file with your Supabase credentials:
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_KEY=your_supabase_anon_key
+## Desenvolvimento
+
+```bash
+npm run dev
 ```
 
-These credentials can be found in your Supabase project settings under Project Settings > API.
+## Build e Deploy
 
-**Important:** Never commit the `.env` file to version control. It contains sensitive information and is already added to `.gitignore`.
+### Build Local
+```bash
+# Limpar arquivos temporários
+./clean.sh
+
+# Build da imagem Docker
+docker build -t dockerconexia/agentesv2:v2.2 .
+
+# Push para Docker Hub
+docker push dockerconexia/agentesv2:v2.2
+```
+
+### Deploy com Docker Swarm
+```bash
+docker stack deploy -c docker-compose.yml conexia
+```
+
+## Variáveis de Ambiente
+
+- `VITE_SUPABASE_URL`: URL do projeto Supabase
+- `VITE_SUPABASE_KEY`: Chave anônima do Supabase
+- `VITE_MINIO_ENDPOINT`: Endpoint do Minio para upload de arquivos
+- `VITE_BACKEND_URL`: URL da API backend
+- `VITE_MINIATURA`: URL da miniatura do app
+- `VITE_URLINFO`: Informações adicionais
+- `VITE_TITULO`: Título do app
+- `VITE_FAVICON`: URL do favicon
+- `VITE_DESCRICAO`: Descrição do app
+
+## Funcionalidades
+
+- Autenticação via Supabase
+- Upload de arquivos para Minio
+- Interface moderna e responsiva
+- Integração com IA para gestão condominial

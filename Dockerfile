@@ -54,33 +54,31 @@ RUN echo 'server { \
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Criar template para variáveis de ambiente
-RUN echo 'export const env = { \
+RUN echo 'window.env = { \
     supabaseUrl: "${VITE_SUPABASE_URL}", \
     supabaseKey: "${VITE_SUPABASE_KEY}", \
     MINIATURA: "${VITE_MINIATURA}", \
     URLINFO: "${VITE_URLINFO}", \
     TITULO: "${VITE_TITULO}", \
     FAVICON: "${VITE_FAVICON}", \
-    DESCRICAO: "${VITE_DESCRICAO}" \
+    DESCRICAO: "${VITE_DESCRICAO}", \
+    MINIO_ENDPOINT: "${VITE_MINIO_ENDPOINT}", \
+    BACKEND_URL: "${VITE_BACKEND_URL}" \
 };' > /usr/share/nginx/html/env-config.js.template
 
 # Script de inicialização
 RUN printf '#!/bin/sh\n\
 # Substituir variáveis no template\n\
-cat > /usr/share/nginx/html/env-config.js << EOF\n\
-window.env = {\n\
-  supabaseUrl: "${VITE_SUPABASE_URL}",\n\
-  supabaseKey: "${VITE_SUPABASE_KEY}",\n\
-  MINIATURA: "${VITE_MINIATURA}",\n\
-  URLINFO: "${VITE_URLINFO}",\n\
-  TITULO: "${VITE_TITULO}",\n\
-  FAVICON: "${VITE_FAVICON}",\n\
-  DESCRICAO: "${VITE_DESCRICAO}"\n\
-};\n\
-EOF\n\
+envsubst < /usr/share/nginx/html/env-config.js.template > /usr/share/nginx/html/env-config.js\n\
 \n\
-echo "Conteúdo de env-config.js:"\n\
+echo "Configuração de ambiente gerada:"\n\
 cat /usr/share/nginx/html/env-config.js\n\
+\n\
+# Verificar variáveis obrigatórias\n\
+if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_KEY" ] || [ -z "$VITE_MINIO_ENDPOINT" ] || [ -z "$VITE_BACKEND_URL" ]; then\n\
+  echo "Erro: Variáveis de ambiente obrigatórias não definidas"\n\
+  exit 1\n\
+fi\n\
 \n\
 nginx -g "daemon off;"\n' > /docker-entrypoint.sh && \
     chmod +x /docker-entrypoint.sh
@@ -99,4 +97,4 @@ USER appuser
 
 EXPOSE 80
 
-CMD ["/docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]

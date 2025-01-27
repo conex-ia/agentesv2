@@ -20,7 +20,6 @@ const TreinamentoCard: React.FC<TreinamentoCardProps> = ({
   onOpenDeleteModal,
   isDeletingTraining
 }) => {
-  // Buscar nome do projeto se houver um projeto vinculado
   const projectIds = training.projeto ? [training.projeto] : [];
   const { projectNames, loading: loadingProjects } = useProjectNames(projectIds);
 
@@ -36,7 +35,7 @@ const TreinamentoCard: React.FC<TreinamentoCardProps> = ({
 
   return (
     <div 
-      className="rounded-lg p-6 space-y-4 h-full"
+      className="rounded-lg p-6 h-full flex flex-col"
       style={{ 
         backgroundColor: 'var(--bg-primary)',
         borderColor: 'var(--border-color)',
@@ -44,63 +43,68 @@ const TreinamentoCard: React.FC<TreinamentoCardProps> = ({
         border: '1px solid var(--border-color)'
       }}
     >
-      <div className="flex flex-col gap-2">
-        <h3 style={{ color: 'var(--text-tertiary)' }} className="font-medium">
-          {training.resumo || 'Não informado'}
-        </h3>
-        <div className="flex items-center gap-2">
-          <span style={{ color: 'var(--text-secondary)' }} className="text-sm">Criado em</span>
-          <span style={{ color: 'var(--text-tertiary)' }} className="text-sm">
-            {formatDate(training.created_at)}
-          </span>
+      <div className="flex-1">
+        <div className="flex flex-col gap-2">
+          <h3 style={{ color: 'var(--text-tertiary)' }} className="font-medium">
+            {training.resumo || 'Não informado'}
+          </h3>
+        </div>
+
+        <div className="border-t border-gray-700/50 mt-4 pt-4">
+          <div className="flex items-center gap-2">
+            <span style={{ color: 'var(--text-secondary)' }} className="text-sm">Criado em</span>
+            <span style={{ color: 'var(--text-tertiary)' }} className="text-sm">
+              {formatDate(training.created_at)}
+            </span>
+          </div>
+
+          <div className="space-y-4 mt-4">
+            <div>
+              <span style={{ color: 'var(--text-secondary)' }} className="text-sm">Projeto</span>
+              <div className="flex items-center gap-3 mt-1">
+                <div 
+                  className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0"
+                  style={{ 
+                    backgroundColor: 'var(--status-success-bg)',
+                    border: '1px solid var(--status-success-color)30'
+                  }}
+                >
+                  <FolderOpen size={20} style={{ color: 'var(--status-success-color)' }} />
+                </div>
+                <span style={{ color: 'var(--text-tertiary)' }}>
+                  {training.projeto ? (loadingProjects ? '...' : projectNames[training.projeto] || '-') : '-'}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <span style={{ color: 'var(--text-secondary)' }} className="text-sm">Origem</span>
+              <div style={{ color: 'var(--text-tertiary)' }}>
+                {training.origem || 'Não informada'}
+              </div>
+            </div>
+
+            <div>
+              <span style={{ color: 'var(--text-secondary)' }} className="text-sm">Base</span>
+              <div style={{ color: 'var(--text-tertiary)' }}>
+                {formatBaseName(training.base)}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="space-y-4">
-        <div>
-          <span style={{ color: 'var(--text-secondary)' }} className="text-sm">Projeto</span>
-          <div className="flex items-center gap-3 mt-1">
-            <div 
-              className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0"
-              style={{ 
-                backgroundColor: 'var(--status-success-bg)',
-                border: '1px solid var(--status-success-color)30'
-              }}
-            >
-              <FolderOpen size={20} style={{ color: 'var(--status-success-color)' }} />
-            </div>
-            <span style={{ color: 'var(--text-tertiary)' }}>
-              {training.projeto ? (loadingProjects ? '...' : projectNames[training.projeto] || '-') : '-'}
-            </span>
-          </div>
-        </div>
-
-        <div>
-          <span style={{ color: 'var(--text-secondary)' }} className="text-sm">Origem</span>
-          <div style={{ color: 'var(--text-tertiary)' }}>
-            {training.origem || 'Não informada'}
-          </div>
-        </div>
-
-        <div>
-          <span style={{ color: 'var(--text-secondary)' }} className="text-sm">Base</span>
-          <div style={{ color: 'var(--text-tertiary)' }}>
-            {formatBaseName(training.base)}
-          </div>
-        </div>
-
+      <div className="border-t border-gray-700/50 mt-4 pt-4">
         <div>
           <span style={{ color: 'var(--text-secondary)' }} className="text-sm">Status</span>
-          <div className="mt-2 flex items-center justify-between">
+          <div className="mt-2 flex items-center justify-end gap-2">
             <StatusIndicator status={training.fase} />
-            <div className="flex items-center gap-2">
-              <ActionButtons
-                training={training}
-                onOpenModal={onOpenModal}
-                onOpenDeleteModal={onOpenDeleteModal}
-                isDeletingTraining={isDeletingTraining}
-              />
-            </div>
+            <ActionButtons
+              training={training}
+              onOpenModal={onOpenModal}
+              onOpenDeleteModal={onOpenDeleteModal}
+              isDeletingTraining={isDeletingTraining}
+            />
           </div>
         </div>
       </div>

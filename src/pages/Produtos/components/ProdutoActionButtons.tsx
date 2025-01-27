@@ -1,15 +1,15 @@
 import React from 'react';
-import { Trash2, Upload } from 'lucide-react';
+import { Upload, Trash2 } from 'lucide-react';
 import type { TrainingData } from '../../../types/training';
 
-interface ActionButtonsProps {
+interface ProdutoActionButtonsProps {
   training: TrainingData;
-  onOpenModal: (id: string, phase: string) => void;
+  onOpenModal: (id: string, fase: string) => void;
   onOpenDeleteModal: (training: TrainingData) => void;
   isDeletingTraining: string | null;
 }
 
-export const ActionButtons: React.FC<ActionButtonsProps> = ({
+export const ProdutoActionButtons: React.FC<ProdutoActionButtonsProps> = ({
   training,
   onOpenModal,
   onOpenDeleteModal,
@@ -17,6 +17,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 }) => {
   return (
     <div className="flex items-center gap-2">
+      {/* Só mostra o botão de upload se não estiver finalizado */}
       {training.fase !== 'finalizado' && (
         <button
           onClick={() => onOpenModal(training.uid, training.fase)}
@@ -33,9 +34,13 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
           </span>
         </button>
       )}
+      
       <button
         onClick={() => onOpenDeleteModal(training)}
-        className="flex flex-col items-center"
+        disabled={isDeletingTraining === training.uid}
+        className={`flex flex-col items-center ${
+          isDeletingTraining === training.uid ? 'opacity-50 cursor-not-allowed' : ''
+        }`}
       >
         <div
           className="p-2 rounded-lg shadow-lg flex items-center justify-center cursor-pointer"

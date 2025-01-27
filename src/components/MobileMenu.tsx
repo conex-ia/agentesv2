@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, GraduationCap, Bot, BarChart2, LogOut, ArrowUpRight, Beaker, Package2 } from 'lucide-react';
+import { LayoutDashboard, GraduationCap, Bot, BarChart2, LogOut, ArrowUpRight, Beaker, Package2, Database } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../stores/useAuth';
 
@@ -8,7 +8,7 @@ interface MobileMenuProps {
   userName: string;
   userProfile?: string;
   activeScreen: string;
-  setActiveScreen: (screen: 'dashboard' | 'training' | 'personalizar' | 'projetos' | 'knowledge-bases' | 'whatsapp' | 'laboratorio' | 'produtos') => void;
+  setActiveScreen: (screen: 'dashboard' | 'training' | 'personalizar' | 'projetos' | 'knowledge-bases' | 'whatsapp' | 'laboratorio' | 'produtos' | 'bases') => void;
 }
 
 const MobileMenu = ({ userName, userProfile, activeScreen, setActiveScreen }: MobileMenuProps) => {
@@ -20,7 +20,7 @@ const MobileMenu = ({ userName, userProfile, activeScreen, setActiveScreen }: Mo
     navigate('/');
   };
 
-  const handleScreenChange = (screen: 'dashboard' | 'training' | 'laboratorio' | 'produtos') => {
+  const handleScreenChange = (screen: 'dashboard' | 'training' | 'laboratorio' | 'produtos' | 'bases') => {
     setActiveScreen(screen);
   };
 
@@ -36,6 +36,12 @@ const MobileMenu = ({ userName, userProfile, activeScreen, setActiveScreen }: Mo
       label: 'Treinamento', 
       screen: 'training' as const,
       active: activeScreen === 'training'
+    },
+    {
+      icon: Database,
+      label: 'Bases',
+      screen: 'bases' as const,
+      active: activeScreen === 'bases'
     },
     { 
       icon: Package2, 

@@ -6,7 +6,7 @@ import { useProject } from '../contexts/ProjectContext';
 import ThemeToggle from './ThemeToggle';
 import { ChevronDown, FolderOpen } from 'lucide-react';
 
-type RouteType = 'dashboard' | 'projetos' | 'whatsapp' | 'treinamentos' | 'laboratorio';
+type RouteType = 'dashboard' | 'projetos' | 'whatsapp' | 'treinamentos' | 'laboratorio' | 'bases';
 
 interface WelcomeHeaderProps {
   route?: RouteType;
@@ -22,6 +22,8 @@ const getWelcomeMessage = (route: RouteType) => {
       return 'aos seus Treinamentos';
     case 'laboratorio':
       return 'ao Laboratório';
+    case 'bases':
+      return 'às suas Bases de Conhecimento';
     default:
       return 'ao seu Dashboard';
   }

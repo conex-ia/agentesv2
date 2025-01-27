@@ -12,6 +12,7 @@ import { ProjectProvider } from './contexts/ProjectContext';
 import { KnowledgeBaseProvider } from './contexts/KnowledgeBaseContext';
 import './config/chartConfig';
 import Produtos from './pages/Produtos';
+import Bases from './pages/Bases';
 
 const App: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const App: React.FC = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/whatsapp" element={<WhatsApp />} />
             <Route path="/projetos" element={<Projetos />} />
+            <Route path="/bases" element={<Bases />} />
             <Route path="/treinamentos" element={<Treinamentos />} />
             <Route path="/produtos" element={<Produtos />} />
             <Route path="/laboratorio" element={<Laboratorio />} />
