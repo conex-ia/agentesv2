@@ -69,18 +69,19 @@ RUN echo 'window.env = { \
 # Script de inicialização
 RUN printf '#!/bin/sh\n\
 # Substituir variáveis no template\n\
-envsubst < /usr/share/nginx/html/env-config.js.template > /usr/share/nginx/html/env-config.js\n\
+envsubst < /usr/share/nginx/html/env-config.js.template > /usr/share/nginx/html/env-config.js 2>/dev/null\n\
 \n\
-echo "Configuração de ambiente gerada:"\n\
-cat /usr/share/nginx/html/env-config.js\n\
-\n\
-# Verificar variáveis obrigatórias\n\
-if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_KEY" ] || [ -z "$VITE_MINIO_ENDPOINT" ] || [ -z "$VITE_BACKEND_URL" ]; then\n\
+# Verificar variáveis obrigatórias silenciosamente\n\
+if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_KEY" ]; then\n\
   echo "Erro: Variáveis de ambiente obrigatórias não definidas"\n\
   exit 1\n\
 fi\n\
 \n\
-nginx -g "daemon off;"\n' > /docker-entrypoint.sh && \
+# Remover diretiva user do nginx.conf\n\
+sed -i "/user/d" /etc/nginx/nginx.conf 2>/dev/null || true\n\
+\n\
+# Iniciar nginx\n\
+exec nginx -g "daemon off;"\n' > /docker-entrypoint.sh && \
     chmod +x /docker-entrypoint.sh
 
 # Ajustar permissões

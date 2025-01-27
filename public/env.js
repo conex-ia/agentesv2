@@ -1,9 +1,11 @@
 window.env = {
-  VITE_SUPABASE_URL: '',
-  VITE_SUPABASE_KEY: '',
-  VITE_MINIATURA: '',
-  VITE_URLINFO: '',
-  VITE_TITULO: '',
-  VITE_FAVICON: '',
-  VITE_DESCRICAO: ''
+  supabaseUrl: '',
+  supabaseKey: '',
+  MINIATURA: '',
+  URLINFO: '',
+  TITULO: '',
+  FAVICON: '',
+  DESCRICAO: '',
+  MINIO_ENDPOINT: '',
+  BACKEND_URL: ''
 };
