@@ -11,9 +11,11 @@ import WelcomeHeader from '../../components/WelcomeHeader';
 import { useProject } from '../../contexts/ProjectContext';
 import { useProjetosSelect } from '../../hooks/useProjetosSelect';
 import ModalAddProduto from './components/ModalAddProduto';
+import ModalDeleteProduto from './components/ModalDeleteProduto';
+import { supabase } from '../../lib/supabase';
 
 const Produtos: React.FC = () => {
-  const { trainings, loading: trainingsLoading } = useTrainingData();
+  const { trainings, loading: trainingsLoading, mutate: mutateTrainings } = useTrainingData();
   const { userUid, empresaUid } = useAuth();
   const { selectedProject } = useProject();
   const { projetos, loading: loadingProjetos } = useProjetosSelect(empresaUid);
@@ -26,7 +28,9 @@ const Produtos: React.FC = () => {
   const [isDeletingTraining, setIsDeletingTraining] = useState<string | null>(null);
   const [selectedTraining, setSelectedTraining] = useState<TrainingData | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [newProdutoId, setNewProdutoId] = useState<string | null>(null);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   const loading = trainingsLoading || loadingProjetos;
 
@@ -96,6 +100,41 @@ const Produtos: React.FC = () => {
 
   const handleOpenDeleteModal = (training: TrainingData) => {
     setSelectedTraining(training);
+    setShowDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setSelectedTraining(null);
+  };
+
+  const handleConfirmDelete = async (training: TrainingData) => {
+    if (!training.uid || !training.url) return;
+    
+    try {
+      const response = await fetch('https://webhook.conexcondo.com.br/webhook/conex-midias', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          acao: 'excluir',
+          baseUid: training.uid,
+          empresaUid,
+          userUid,
+          imagens: training.url
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao excluir produto');
+      }
+
+      // Não precisamos mais chamar mutateTrainings() pois o realtime vai cuidar disso
+      // quando o backend atualizar ativa para false
+    } catch (error) {
+      console.error('Erro ao excluir produto:', error);
+    }
   };
 
   const handlePageChange = (page: number) => {
@@ -128,7 +167,7 @@ const Produtos: React.FC = () => {
 
             {filteredTrainings.length === 0 ? (
               <EmptyState
-                icon={<Package size={48} />}
+                icon={Package}
                 title="Nenhum produto encontrado"
                 description="Comece adicionando um novo produto"
               />
@@ -143,6 +182,7 @@ const Produtos: React.FC = () => {
                 isDeletingTraining={isDeletingTraining}
               />
             )}
+
           </div>
         </div>
       </div>
@@ -152,6 +192,14 @@ const Produtos: React.FC = () => {
         onClose={handleCloseModal}
         produtoId={newProdutoId || undefined}
         currentPhase={selectedTraining?.fase || 'aguardando'}
+      />
+
+      <ModalDeleteProduto
+        isOpen={showDeleteModal}
+        onClose={handleCloseDeleteModal}
+        training={selectedTraining}
+        onConfirmDelete={handleConfirmDelete}
+        deleteSuccess={deleteSuccess}
       />
     </div>
   );

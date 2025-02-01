@@ -15,6 +15,7 @@ interface KnowledgeBaseTableProps {
   onDeleteBase?: (base: KnowledgeBase) => void;
   onAddBase?: (name: string, projectId: string) => Promise<string>;
   onPersonalizar?: (base: KnowledgeBase) => void;
+  onUpdateTipo?: (base: KnowledgeBase, tipo: string) => Promise<void>;
 }
 
 const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
@@ -24,6 +25,7 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
   onDeleteBase,
   onAddBase,
   onPersonalizar,
+  onUpdateTipo,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [renderedBases, setRenderedBases] = useState<KnowledgeBase[]>([]);
@@ -140,34 +142,51 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-gray-700/50">
-                <button
-                  onClick={() => onView?.(base)}
-                  className="flex flex-col items-center"
-                >
-                  <div className="p-2 rounded-lg shadow-lg bg-emerald-500/10">
-                    <Eye className="w-5 h-5 text-emerald-500" />
+              <div className="flex flex-col">
+                <div className="border-t border-gray-700/50 pt-4 space-y-2">
+                  <div>
+                    <span className="text-[var(--text-secondary)] text-sm">Tipo:</span>
+                    <select
+                      value={base.tipo || 'RAG'}
+                      onChange={(e) => onUpdateTipo?.(base, e.target.value)}
+                      className="w-full mt-1 rounded-lg p-2 bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      <option value="RAG">RAG</option>
+                      <option value="SDR">SDR</option>
+                    </select>
                   </div>
-                  <span className="text-xs text-emerald-500 mt-1">ver</span>
-                </button>
-                <button
-                  onClick={() => onPersonalizar?.(base)}
-                  className="flex flex-col items-center"
-                >
-                  <div className="p-2 rounded-lg shadow-lg bg-emerald-500/10">
-                    <Bot className="w-5 h-5 text-emerald-500" />
-                  </div>
-                  <span className="text-xs text-emerald-500 mt-1">personalizar</span>
-                </button>
-                <button
-                  onClick={() => onDeleteBase?.(base)}
-                  className="flex flex-col items-center"
-                >
-                  <div className="p-2 rounded-lg shadow-lg bg-red-500/10">
-                    <Trash2 className="w-5 h-5 text-red-500" />
-                  </div>
-                  <span className="text-xs text-red-500 mt-1">excluir</span>
-                </button>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-gray-700/50">
+                  <button
+                    onClick={() => onView?.(base)}
+                    className="flex flex-col items-center"
+                  >
+                    <div className="p-2 rounded-lg shadow-lg bg-emerald-500/10">
+                      <Eye className="w-5 h-5 text-emerald-500" />
+                    </div>
+                    <span className="text-xs text-emerald-500 mt-1">ver</span>
+                  </button>
+                  <button
+                    onClick={() => onPersonalizar?.(base)}
+                    className="flex flex-col items-center"
+                  >
+                    <div className="p-2 rounded-lg shadow-lg bg-emerald-500/10">
+                      <Bot className="w-5 h-5 text-emerald-500" />
+                    </div>
+                    <span className="text-xs text-emerald-500 mt-1">personalizar</span>
+                  </button>
+                  <button
+                    onClick={() => onDeleteBase?.(base)}
+                    className="flex flex-col items-center"
+                  >
+                    <div className="p-2 rounded-lg shadow-lg bg-red-500/10">
+                      <Trash2 className="w-5 h-5 text-red-500" />
+                    </div>
+                    <span className="text-xs text-red-500 mt-1">excluir</span>
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -224,6 +243,7 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
             <th className="text-left py-4 px-4 font-medium" style={{ color: 'var(--text-secondary)' }}>Projeto</th>
             <th className="text-left py-4 px-4 font-medium" style={{ color: 'var(--text-secondary)' }}>Treinamentos</th>
             <th className="text-left py-4 px-4 font-medium" style={{ color: 'var(--text-secondary)' }}>Conteúdos</th>
+            <th className="text-left py-4 px-4 font-medium" style={{ color: 'var(--text-secondary)' }}>Tipo</th>
             <th className="text-center py-4 px-4 font-medium" style={{ color: 'var(--text-secondary)', width: '280px' }}>Gestão</th>
           </tr>
         </thead>
@@ -276,6 +296,17 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                 ) : (
                   <span style={{ color: 'var(--text-secondary)' }}>-</span>
                 )}
+              </td>
+              <td className="py-4 px-4">
+                <select
+                  value={base.tipo || 'RAG'}
+                  onChange={(e) => onUpdateTipo?.(base, e.target.value)}
+                  className="w-full rounded-lg p-2 bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  style={{ color: 'var(--text-primary)' }}
+                >
+                  <option value="RAG">RAG</option>
+                  <option value="SDR">SDR</option>
+                </select>
               </td>
               <td className="px-4 py-4">
                 <div className="flex items-center justify-center gap-4">

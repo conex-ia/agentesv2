@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, FolderPlus } from 'lucide-react';
 
 interface AddProjetoModalProps {
   isOpen: boolean;
@@ -37,96 +37,96 @@ const AddProjetoModal: React.FC<AddProjetoModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-10 overflow-y-auto bg-black/30"
-      onClick={onClose}
-    >
-      <div className="flex items-center justify-center min-h-screen">
+    <AnimatePresence>
+      {isOpen && (
         <motion.div
-          initial={{ scale: 0.95 }}
-          animate={{ scale: 1 }}
-          exit={{ scale: 0.95 }}
-          className="relative bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4"
-          style={{ backgroundColor: 'var(--bg-primary)' }}
-          onClick={(e) => e.stopPropagation()}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
         >
-          <div className="flex justify-between items-start mb-6">
-            <h2 
-              className="text-lg font-medium"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              Adicionar Novo Projeto
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-500"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit}>
-            <div className="mb-6">
-              <label
-                htmlFor="nome"
-                className="block mb-2 text-sm font-medium"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                Nome do Projeto
-              </label>
-              <input
-                type="text"
-                id="nome"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                style={{
-                  backgroundColor: 'var(--bg-secondary)',
-                  color: 'var(--text-primary)',
-                  borderColor: 'var(--border-color)',
-                }}
-                required
-              />
-            </div>
-
-            {error && (
-              <div className="mb-4 text-sm text-red-600 dark:text-red-400">
-                {error}
+          <div className="w-full max-w-lg bg-[var(--bg-primary)] rounded-lg shadow-lg">
+            {/* Header */}
+            <div className="p-6 border-b" style={{ borderColor: 'var(--border-color)' }}>
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                  <FolderPlus className="text-emerald-500" size={24} />
+                  Adicionar Novo Projeto
+                </h2>
+                <button 
+                  onClick={onClose}
+                  className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                >
+                  <X size={24} />
+                </button>
               </div>
-            )}
-
-            <div className="flex justify-end space-x-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-sm font-medium rounded-md"
-                style={{
-                  backgroundColor: 'var(--bg-secondary)',
-                  color: 'var(--text-primary)',
-                  border: '1px solid var(--border-color)',
-                }}
-                disabled={isLoading}
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                disabled={isLoading || !nome.trim()}
-              >
-                {isLoading ? 'Adicionando...' : 'Adicionar'}
-              </button>
             </div>
-          </form>
+
+            {/* Content */}
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              <div>
+                <label 
+                  htmlFor="nome" 
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  Nome do Projeto
+                </label>
+                <input
+                  type="text"
+                  id="nome"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-shadow"
+                  style={{ 
+                    backgroundColor: 'var(--bg-secondary)',
+                    borderColor: 'var(--border-color)',
+                    color: 'var(--text-primary)',
+                  }}
+                  placeholder="Digite o nome do projeto"
+                  required
+                  autoFocus
+                />
+              </div>
+
+              {error && (
+                <div className="text-sm text-red-500">
+                  {error}
+                </div>
+              )}
+
+              {/* Footer */}
+              <div className="flex justify-end gap-3 pt-4 border-t" style={{ borderColor: 'var(--border-color)' }}>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  disabled={isLoading}
+                  className="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
+                  style={{ 
+                    backgroundColor: 'var(--bg-secondary)',
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={isLoading || !nome.trim()}
+                  className="px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    backgroundColor: nome.trim() && !isLoading ? 'rgb(16 185 129)' : 'var(--bg-secondary)',
+                  }}
+                >
+                  <FolderPlus size={16} />
+                  {isLoading ? 'Adicionando...' : 'Adicionar Projeto'}
+                </button>
+              </div>
+            </form>
+          </div>
         </motion.div>
-      </div>
-    </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

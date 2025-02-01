@@ -77,11 +77,19 @@ const Bases: React.FC = () => {
     return await deleteBase(deleteModal.base.uid);
   };
 
-  const handlePersonalizar = async (base: any, prompt: string) => {
+  const handlePersonalizar = async (base: any, prompt: string, tipo: string) => {
     try {
-      await updateBasePrompt(base.uid, prompt);
+      await updateBasePrompt(base.uid, prompt, tipo);
     } catch (error) {
-      console.error('Erro ao atualizar prompt:', error);
+      console.error('Erro ao atualizar prompt e tipo:', error);
+    }
+  };
+
+  const handleUpdateTipo = async (base: any, tipo: string) => {
+    try {
+      await updateBasePrompt(base.uid, base.prompt || '', tipo);
+    } catch (error) {
+      console.error('Erro ao atualizar tipo:', error);
     }
   };
 
@@ -120,6 +128,7 @@ const Bases: React.FC = () => {
                   onView={(base) => setViewModal({ isOpen: true, base })}
                   onDeleteBase={(base) => setDeleteModal({ isOpen: true, base })}
                   onPersonalizar={(base) => setPersonalizarModal({ isOpen: true, base })}
+                  onUpdateTipo={handleUpdateTipo}
                 />
               )}
             </div>

@@ -3,7 +3,6 @@ import type { TrainingData } from '../../../types/training';
 import Pagination from '../../../components/Pagination';
 import ProdutoCard from './ProdutoCard';
 import { ProdutoTable } from './ProdutoTable';
-import { EmptyState } from '../../../components/EmptyState';
 import { Package } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 6;
@@ -31,16 +30,6 @@ const ProdutoGrid: React.FC<ProdutoGridProps> = ({
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentTrainings = trainings.slice(startIndex, endIndex);
-
-  if (trainings.length === 0) {
-    return (
-      <EmptyState
-        icon={<Package className="w-12 h-12" />}
-        title="Nenhum produto"
-        description="Você ainda não possui nenhum produto. Adicione um novo conteúdo para começar."
-      />
-    );
-  }
 
   return (
     <div className="flex flex-col gap-4 mt-4 mb-8">

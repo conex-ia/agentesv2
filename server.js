@@ -49,8 +49,7 @@ app.post('/api/presign', async (req, res) => {
     }
 });
 
-// Iniciar servidor na porta 3500
 const PORT = 3500;
 app.listen(PORT, () => {
-    console.log(`Servidor presign rodando na porta ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });

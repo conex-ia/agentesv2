@@ -1,0 +1,83 @@
+ROTEIRO PARA CONFIGURAÇÃO DA LANDING PAGE COM LOGIN MODAL
+
+1. CONFIGURAÇÃO INICIAL DO PROJETO
+-------------------------------
+1.1 Instalar dependências:
+npm install -D tailwindcss postcss autoprefixer @headlessui/react
+npm install @supabase/supabase-js zustand framer-motion
+
+1.2 Inicializar Tailwind:
+npx tailwindcss init -p
+
+2. ARQUIVOS DE CONFIGURAÇÃO
+-------------------------
+2.1 tailwind.config.js:
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {}
+  },
+  plugins: []
+}
+
+2.2 postcss.config.js:
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+
+2.3 src/styles/global.css:
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+3. ESTRUTURA DE ARQUIVOS RECOMENDADA
+---------------------------------
+src/
+  ├── components/
+  │   ├── LoginModal.tsx
+  │   └── Header.tsx
+  ├── pages/
+  │   └── Home.tsx
+  ├── styles/
+  │   └── global.css
+  └── App.tsx
+
+4. COMPONENTES PRINCIPAIS
+----------------------
+4.1 LoginModal.tsx:
+- Usar @headlessui/react para o modal
+- Integrar com Supabase para autenticação
+- Usar Framer Motion para animações
+- Gerenciar estado com Zustand
+
+4.2 Home.tsx:
+- Layout responsivo com Tailwind
+- Hero section com chamada para ação
+- Seção de features/benefícios
+- Footer com links importantes
+
+5. DICAS IMPORTANTES
+------------------
+- Sempre use className ao invés de class em componentes React
+- Mantenha os componentes pequenos e reutilizáveis
+- Use as variantes do Tailwind para responsividade (sm:, md:, lg:)
+- Implemente loading states para melhor UX
+- Adicione feedback visual para interações do usuário
+
+6. POSSÍVEIS PROBLEMAS E SOLUÇÕES
+------------------------------
+- Se o Tailwind não estiver funcionando, verifique se o content no tailwind.config.js inclui todos os arquivos necessários
+- Se o PostCSS der erro, certifique-se que postcss.config.js está na raiz do projeto
+- Para problemas com o Vite, limpe o cache: npm run clean (se disponível) ou delete node_modules e reinstale
+
+7. PRÓXIMOS PASSOS
+----------------
+- Implementar proteção de rotas
+- Adicionar testes
+- Configurar CI/CD
+- Implementar recuperação de senha
+- Adicionar analytics

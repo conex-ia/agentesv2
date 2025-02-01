@@ -1,0 +1,21 @@
+.swiper {
+  padding-bottom: 2.5rem !important;
+}
+
+.swiper-pagination {
+  bottom: 0 !important;
+}
+
+.swiper-pagination-bullet {
+  background: #4B5563 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #10B981 !important;
+}
+
+/* Remove os botões padrão do Swiper */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  display: none;
+}

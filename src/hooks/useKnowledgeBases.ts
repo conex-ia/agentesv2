@@ -14,6 +14,7 @@ export interface KnowledgeBase {
   treinamentosuid: string[] | null; // uuid[] null
   projeto: string | null;        // uuid null
   prompt: string | null;         // text null
+  tipo: string | null;           // text null
 }
 
 export const useKnowledgeBases = () => {
@@ -145,31 +146,31 @@ export const useKnowledgeBases = () => {
     }
   };
 
-  const updateBasePrompt = async (baseUid: string, prompt: string) => {
+  const updateBasePrompt = async (baseUid: string, prompt: string, tipo: string) => {
     try {
-      console.log('[useKnowledgeBases] Atualizando prompt da base:', baseUid);
+      console.log('[useKnowledgeBases] Atualizando prompt e tipo da base:', baseUid);
       
       const { data, error } = await supabase
         .from('conex-bases_t')
-        .update({ prompt })
+        .update({ prompt, tipo })
         .eq('uid', baseUid)
         .select();
 
       if (error) {
-        console.error('[useKnowledgeBases] Erro ao atualizar prompt:', error);
+        console.error('[useKnowledgeBases] Erro ao atualizar prompt e tipo:', error);
         throw error;
       }
 
       // Atualiza o estado local
       setBases(prevBases => 
         prevBases.map(base => 
-          base.uid === baseUid ? { ...base, prompt } : base
+          base.uid === baseUid ? { ...base, prompt, tipo } : base
         )
       );
 
       return { success: true, data };
     } catch (err) {
-      console.error('[useKnowledgeBases] Erro ao atualizar prompt:', err);
+      console.error('[useKnowledgeBases] Erro ao atualizar prompt e tipo:', err);
       throw err;
     }
   };

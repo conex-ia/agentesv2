@@ -6,6 +6,11 @@ const supabaseUrl = env.supabaseUrl || import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = env.supabaseKey || import.meta.env.VITE_SUPABASE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
+  console.error('Env values:', {
+    windowEnv: (window as any).env,
+    supabaseUrl,
+    supabaseKey
+  });
   throw new Error('Missing Supabase environment variables. Please check your .env file.');
 }
 

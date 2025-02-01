@@ -217,7 +217,7 @@ const SimpleTextArea = ({ value, onChange }: { value: string; onChange: (value: 
     <textarea
       value={localValue}
       onChange={handleChange}
-      className="w-full h-full bg-gray-800 text-white rounded-lg p-3 border border-gray-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-none"
+      className="w-full h-full bg-gray-800 text-white rounded-lg p-3 border border-gray-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
       placeholder="Descreva esta imagem..."
     />
   );
@@ -372,8 +372,21 @@ const ModalAddProduto = ({
   }, []);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Converter os novos arquivos
-    const newFiles = acceptedFiles.map(file => ({
+    // Filtrar arquivos duplicados comparando nomes
+    const uniqueFiles = acceptedFiles.filter(newFile => 
+      !filesWithDesc.some(existingFile => 
+        existingFile.file.name === newFile.name
+      )
+    );
+
+    // Se todos os arquivos foram filtrados por serem duplicados
+    if (uniqueFiles.length === 0) {
+      alert('Este arquivo já foi adicionado');
+      return;
+    }
+
+    // Converter os novos arquivos únicos
+    const newFiles = uniqueFiles.map(file => ({
       file,
       description: '',
       preview: URL.createObjectURL(file)
@@ -432,7 +445,7 @@ const ModalAddProduto = ({
 
   const uploadToMinio = async (file: File, fileName: string): Promise<string> => {
     try {
-      const presignedUrl = await fetch('http://localhost:3500/api/presign', {
+      const presignedUrl = await fetch('/api/presign', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -561,11 +574,8 @@ const ModalAddProduto = ({
   };
 
   useEffect(() => {
-    if (stage === 'progress') {
+    if (stage === 'progress' && produtoId) {  
       setIsLoadingPhase(true);
-      setPhase(null);
-      
-      // Buscar estado inicial
       const fetchInitialState = async () => {
         try {
           const { data, error } = await supabase
@@ -731,7 +741,7 @@ const ModalAddProduto = ({
                       </div>
 
                       {/* Lista de arquivos */}
-                      <div className="space-y-2">
+                      <div className="space-y-2 max-h-[144px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
                         {filesWithDesc.map((file, index) => (
                           <div
                             key={index}
@@ -871,7 +881,11 @@ const ModalAddProduto = ({
               <div className="flex gap-3">
                 <button
                   type="button"
-                  className="inline-flex justify-center rounded-md border border-transparent bg-gray-700 px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-600 focus:outline-none"
+                  className={`inline-flex justify-center rounded-md border border-transparent ${
+                    phase === 'finalizado' 
+                      ? 'bg-emerald-500/80 text-white hover:bg-emerald-600/80' 
+                      : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                  } px-4 py-2 text-sm font-medium focus:outline-none`}
                   onClick={onClose}
                 >
                   {stage === 'upload' ? 'Cancelar' : 'Fechar'}

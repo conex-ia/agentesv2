@@ -7,7 +7,7 @@ interface ModalPersonalizarBaseProps {
   isOpen: boolean;
   onClose: () => void;
   base: KnowledgeBase | null;
-  onConfirm?: (base: KnowledgeBase, text: string) => Promise<void>;
+  onConfirm?: (base: KnowledgeBase, text: string, tipo: string) => Promise<void>;
 }
 
 const ModalPersonalizarBase: React.FC<ModalPersonalizarBaseProps> = ({
@@ -17,21 +17,25 @@ const ModalPersonalizarBase: React.FC<ModalPersonalizarBaseProps> = ({
   onConfirm
 }) => {
   const [text, setText] = useState('');
+  const [tipo, setTipo] = useState('RAG');
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Carrega o valor inicial do prompt quando o modal abrir ou a base mudar
+  // Carrega o valor inicial do prompt e tipo quando o modal abrir ou a base mudar
   useEffect(() => {
     if (base?.prompt) {
       setText(base.prompt);
     } else {
       setText('');
     }
+    if (base?.tipo) {
+      setTipo(base.tipo);
+    }
   }, [base]);
 
   const handleConfirm = async () => {
     if (base && onConfirm) {
       try {
-        await onConfirm(base, text);
+        await onConfirm(base, text, tipo);
         setShowSuccess(true);
         setTimeout(() => {
           setShowSuccess(false);
@@ -92,8 +96,27 @@ const ModalPersonalizarBase: React.FC<ModalPersonalizarBaseProps> = ({
               <div className="p-6">
                 <div className="flex flex-col">
                   <div className="mb-6 rounded-lg p-6">
+                    <div className="mb-4">
+                      <label 
+                        htmlFor="tipo" 
+                        className="block mb-2 text-sm font-medium"
+                        style={{ color: 'var(--text-primary)' }}
+                      >
+                        Tipo
+                      </label>
+                      <select
+                        id="tipo"
+                        value={tipo}
+                        onChange={(e) => setTipo(e.target.value)}
+                        className="w-full rounded-lg p-2 bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                        style={{ color: 'var(--text-primary)' }}
+                      >
+                        <option value="RAG">RAG</option>
+                        <option value="SDR">SDR</option>
+                      </select>
+                    </div>
                     <h3 className="mb-4 text-lg font-medium" style={{ color: 'var(--text-primary)' }}>
-                      Personalizar
+                      Personalizar Prompt
                     </h3>
                     <textarea
                       value={text}

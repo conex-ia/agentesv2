@@ -38,17 +38,23 @@ const ProjetosGrid = ({
   const handleDeleteProjeto = async (projeto: Projeto) => {
     try {
       setIsDeletingProjeto(projeto.uid);
+      console.log('[ProjetosGrid] Iniciando exclusão do projeto:', projeto);
+      
+      // Fazer soft delete atualizando ativo = false
       const { error } = await supabase
         .from('conex_projetos')
-        .delete()
+        .update({ ativo: false })
         .eq('uid', projeto.uid);
 
       if (error) throw error;
+
+      console.log('[ProjetosGrid] Projeto excluído com sucesso');
     } catch (error) {
-      console.error('Erro ao deletar projeto:', error);
+      console.error('[ProjetosGrid] Erro ao deletar projeto:', error);
     } finally {
+      // Importante: resetar o estado de deleting após a conclusão
+      console.log('[ProjetosGrid] Finalizando estado de exclusão');
       setIsDeletingProjeto(null);
-      setDeleteModal({ isOpen: false, projeto: null });
     }
   };
 
@@ -57,7 +63,7 @@ const ProjetosGrid = ({
       <EmptyState
         title="Nenhum projeto encontrado"
         description="Comece criando um novo projeto"
-        icon={<Plus className="w-12 h-12" />}
+        icon={FolderOpen}
       />
     );
   }
@@ -217,23 +223,19 @@ const ProjetosGrid = ({
         </div>
       )}
 
-      {viewModal.isOpen && viewModal.projeto && (
-        <ViewProjetoModal
-          projeto={viewModal.projeto}
-          isOpen={viewModal.isOpen}
-          onClose={() => setViewModal({ isOpen: false, projeto: null })}
-        />
-      )}
+      <ViewProjetoModal
+        isOpen={viewModal.isOpen}
+        projeto={viewModal.projeto}
+        onClose={() => setViewModal({ isOpen: false, projeto: null })}
+      />
 
-      {deleteModal.isOpen && deleteModal.projeto && (
-        <DeleteProjetoModal
-          projeto={deleteModal.projeto}
-          isOpen={deleteModal.isOpen}
-          onClose={() => setDeleteModal({ isOpen: false, projeto: null })}
-          onConfirm={handleDeleteProjeto}
-          isDeleting={isDeletingProjeto === deleteModal.projeto.uid}
-        />
-      )}
+      <DeleteProjetoModal
+        isOpen={deleteModal.isOpen}
+        projeto={deleteModal.projeto}
+        onClose={() => setDeleteModal({ isOpen: false, projeto: null })}
+        onConfirm={() => deleteModal.projeto && handleDeleteProjeto(deleteModal.projeto)}
+        isDeleting={isDeletingProjeto === deleteModal.projeto?.uid}
+      />
     </>
   );
 };

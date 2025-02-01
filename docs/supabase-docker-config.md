@@ -72,6 +72,61 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 </html>
 ```
 
+## 5. Configuração do Servidor de Upload (Porta 3500)
+
+### Desenvolvimento Local
+```bash
+# Rodar o servidor de upload localmente
+node server.js  # Roda na porta 3500
+```
+
+### Produção
+O servidor de upload precisa ser configurado como um serviço separado no Docker:
+
+1. Criar Dockerfile.upload:
+```dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+COPY package*.json ./
+COPY server.js ./
+
+RUN npm install
+
+EXPOSE 3500
+CMD ["node", "server.js"]
+```
+
+2. Adicionar ao docker-compose.yml:
+```yaml
+services:
+  upload-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.upload
+    environment:
+      - MINIO_ENDPOINT=${VITE_MINIO_ENDPOINT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    ports:
+      - "3500:3500"
+```
+
+3. No frontend, configurar a URL do servidor de upload:
+```typescript
+// Em produção, usar a URL completa em vez de localhost
+const UPLOAD_SERVER_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://seu-dominio.com/upload'  // URL de produção
+  : 'http://localhost:3500';          // URL local
+```
+
+### Observações Importantes
+1. O servidor na porta 3500 é essencial para gerar URLs pré-assinadas para upload no MinIO
+2. Em produção, configurar um domínio/subdomínio específico para o servidor de upload
+3. Garantir que as credenciais do MinIO estejam corretamente configuradas em ambos ambientes
+4. Usar HTTPS em produção para segurança
+5. Configurar CORS apropriadamente para permitir apenas origens confiáveis
+
 ## Dicas Importantes para Debug
 
 ### 1. Consistência de Nomes

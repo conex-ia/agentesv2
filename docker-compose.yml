@@ -2,22 +2,22 @@ version: "3.7"
 
 services:
   conexia-front:
-    image: dockerconexia/agentesv2:v2.4
+    image: dockerconexia/agentesv2:v2.5
     networks:
       - network_public
     environment:
       VITE_SUPABASE_URL: "https://tfmzozvazfbrapkzxrcz.supabase.co"
-      VITE_SUPABASE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmbXpvenZhemZicmFwa3p4cmN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMzMjMwNTIsImV4cCI6MjAzODg5OTA1Mn0.IddIxLB1B4rg0A87lp4ZQzyu1mhTppo7SW_CjP3rwCw"
+      VITE_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmbXpvenZhemZicmFwa3p4cmN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMzMjMwNTIsImV4cCI6MjAzODg5OTA1Mn0.IddIxLB1B4rg0A87lp4ZQzyu1mhTppo7SW_CjP3rwCw"
       VITE_MINIATURA: "https://5e45ddc988d620559d5e3fc3d82f7999.cdn.bubble.io/f1705723303222x126350687217950290/logo-conexai-back.png"
       VITE_URLINFO: "Software sob medida"
       VITE_TITULO: "ConexIA"
       VITE_FAVICON: "https://8a9fa808ea18d066080b81b1741b3afc.cdn.bubble.io/f1730137865354x222391700036400640/image-removebg-preview%20-%202024-10-24T175414.053.png"
       VITE_DESCRICAO: "Aplicativo desenvolvido para automatizar a gestão de condomínios com inteligência artificial."
-      # Novas variáveis para o Minio
+      # Variáveis do MinIO e Backend
       VITE_MINIO_ENDPOINT: "https://newapi.conexcondo.com.br"
       VITE_BACKEND_URL: "https://newapi.conexcondo.com.br"
-      MINIO_ACCESS_KEY: minioadmin
-      MINIO_SECRET_KEY: minioadmin
+      MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY}"
+      MINIO_SECRET_KEY: "${MINIO_SECRET_KEY}"
     deploy:
       replicas: 1
       update_config:
